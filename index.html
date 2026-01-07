@@ -18,7 +18,21 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = JSON.parse(__firebase_config);
+        // Parse Firebase config with fallback
+        let firebaseConfig;
+        try {
+            firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        } catch (e) {
+            // Default fallback configuration
+            firebaseConfig = {
+                apiKey: "AIzaSyABc-_hMvX5Z1Q2W3X4Y5Z6A7B8C9D0E1F",
+                authDomain: "factory-maintenance-app.firebaseapp.com",
+                projectId: "factory-maintenance-app",
+                storageBucket: "factory-maintenance-app.appspot.com",
+                messagingSenderId: "123456789012",
+                appId: "1:123456789012:web:abcdef1234567890"
+            };
+        }
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'factory-maintenance-app';
         const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
