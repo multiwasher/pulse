@@ -528,17 +528,17 @@
                                     <p className="text-slate-400 font-medium text-lg md:text-2xl uppercase">WHAT IS THE STATUS OF THIS STATION?</p>
                                 </header>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-10 w-full max-w-4xl">
-                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'happy'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-green-500 hover:bg-green-50 transition-all active:scale-95 shadow-xl">
-                                        <SmileyFace type="happy" className="w-16 h-16 md:w-40 md:h-40 text-green-500" />
-                                        <span className="font-black text-xl md:text-2xl uppercase text-green-600">EXCELLENT</span>
+                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'sad'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-red-500 hover:bg-red-50 transition-all active:scale-95 shadow-xl">
+                                        <SmileyFace type="sad" className="w-16 h-16 md:w-40 md:h-40 text-red-500" />
+                                        <span className="font-black text-xl md:text-2xl uppercase text-red-600">CRITICAL</span>
                                     </button>
                                     <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'neutral'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-yellow-500 hover:bg-yellow-50 transition-all active:scale-95 shadow-xl">
                                         <SmileyFace type="neutral" className="w-16 h-16 md:w-40 md:h-40 text-yellow-500" />
                                         <span className="font-black text-xl uppercase text-yellow-600 text-center">ACCEPTABLE</span>
                                     </button>
-                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'sad'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-red-500 hover:bg-red-50 transition-all active:scale-95 shadow-xl">
-                                        <SmileyFace type="sad" className="w-16 h-16 md:w-40 md:h-40 text-red-500" />
-                                        <span className="font-black text-xl md:text-2xl uppercase text-red-600">CRITICAL</span>
+                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'happy'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-green-500 hover:bg-green-50 transition-all active:scale-95 shadow-xl">
+                                        <SmileyFace type="happy" className="w-16 h-16 md:w-40 md:h-40 text-green-500" />
+                                        <span className="font-black text-xl md:text-2xl uppercase text-green-600">EXCELLENT</span>
                                     </button>
                                 </div>
                                 <button onClick={() => setActiveEval(null)} className="py-6 px-12 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-xl hover:bg-slate-200 transition-all">CANCEL</button>
