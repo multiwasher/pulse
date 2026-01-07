@@ -221,6 +221,30 @@
                 setView('app');
             };
 
+            // Inactivity timer for app view - return to splash after 30s
+            useEffect(() => {
+                if (view !== 'app') return;
+                
+                let inactivityTimer;
+                const resetTimer = () => {
+                    clearTimeout(inactivityTimer);
+                    inactivityTimer = setTimeout(() => {
+                        setView('splash');
+                        setPendingEvaluations({});
+                    }, 30000); // 30 seconds
+                };
+
+                // Reset timer on user activity
+                const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'touchmove', 'click'];
+                events.forEach(event => document.addEventListener(event, resetTimer));
+                resetTimer(); // Start the initial timer
+
+                return () => {
+                    clearTimeout(inactivityTimer);
+                    events.forEach(event => document.removeEventListener(event, resetTimer));
+                };
+            }, [view]);
+
             const currentStatusMap = useMemo(() => {
                 const status = {};
                 const sortedLogs = [...historyLogs].sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
@@ -311,7 +335,7 @@
             if (view === 'splash') {
                 return (
                     <div onClick={startNewRound} className="min-h-screen bg-white flex items-center justify-center cursor-pointer relative overflow-hidden">
-                        <div className="absolute top-8 left-8 z-10"><img src={CORNER_LOGO} className="w-[191px] md:w-[286px]" /></div>
+                        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-10"><img src={CORNER_LOGO} className="w-[191px] md:w-[286px]" /></div>
                         <div className="relative flex items-center justify-center w-full h-full max-h-[90vh]">
                             <img src={SPLASH_IMAGE} className="max-w-[90%] md:max-w-full max-h-full object-contain drop-shadow-2xl rounded-[3rem]" />
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-heartbeat">
