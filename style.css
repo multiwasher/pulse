@@ -1,0 +1,38 @@
+/* Animações Personalizadas */
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.15); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+/* Estilos de Gradiente Requisitados */
+.label-gradient {
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%);
+}
+
+.button-group-border {
+  background: linear-gradient(#000, #000) padding-box, 
+              linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%) border-box;
+  border: 2px solid transparent;
+  border-radius: 9999px;
+}
+
+/* Ajustes de scroll e base */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.modal-blur {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
