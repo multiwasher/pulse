@@ -1,4 +1,4 @@
-/* Animações Personalizadas */
+/* Animação do Coração Pulsante */
 @keyframes heartbeat {
   0% { transform: scale(1); }
   14% { transform: scale(1.15); }
@@ -11,12 +11,13 @@
   animation: heartbeat 1.5s ease-in-out infinite;
 }
 
-/* Estilos de Gradiente Requisitados */
+/* Estilo do Gradiente das Etiquetas (Arredondamento de 0.5rem) */
 .label-gradient {
   border-radius: 0.5rem;
   background: linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%);
 }
 
+/* Botão com Fundo Preto #000000 e Borda de 2px com Gradiente */
 .button-group-border {
   background: linear-gradient(#000, #000) padding-box, 
               linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%) border-box;
@@ -24,15 +25,37 @@
   border-radius: 9999px;
 }
 
-/* Ajustes de scroll e base */
+/* Configurações Gerais de Layout */
 body {
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
   background-color: white;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 
+#root {
+  min-height: 100vh;
+}
+
+/* Ajustes para modais e sombras */
 .modal-blur {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* Scrollbar personalizada para o Dashboard */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

@@ -3,32 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manutenção Postos Fábrica</title>
+    <title>Manutenção de Postos - Fábrica</title>
     
-    <!-- Tailwind CSS para estilização rápida -->
+    <!-- Link para o ficheiro CSS externo -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- React & ReactDOM para a lógica da interface -->
+    <!-- React & ReactDOM CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- Firebase SDK (Versão Compat para facilitar o acesso global no CodePen) -->
+    <!-- Firebase SDK Compat (Versão 10.8.0) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    
-    <!-- Lucide Icons para os ícones da interface -->
-    <script src="https://unpkg.com/lucide@latest"></script>
 
-    <style>
-        /* Fallback para garantir que o root ocupa o ecrã inteiro */
-        #root {
-            min-height: 100vh;
-        }
-    </style>
+    <!-- Babel Standalone: Necessário para processar JSX no browser em ambientes como Codespaces -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-white">
-    <!-- Ponto de montagem da aplicação React -->
+<body>
     <div id="root"></div>
+
+    <!-- Ligação ao ficheiro JS com type="text/babel" para que o Babel processe o React -->
+    <script type="text/babel" src="script.js"></script>
 </body>
 </html>
