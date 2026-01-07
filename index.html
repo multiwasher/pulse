@@ -13,27 +13,23 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
     <!-- Firebase SDK (Modular) -->
-    <script>
-        // Define default Firebase config to avoid ReferenceError
-        if (typeof __firebase_config === 'undefined') {
-            window.__firebase_config = JSON.stringify({
-                apiKey: "AIzaSyABc-_hMvX5Z1Q2W3X4Y5Z6A7B8C9D0E1F",
-                authDomain: "factory-maintenance-app.firebaseapp.com",
-                projectId: "factory-maintenance-app",
-                storageBucket: "factory-maintenance-app.appspot.com",
-                messagingSenderId: "123456789012",
-                appId: "1:123456789012:web:abcdef1234567890"
-            });
-        }
-    </script>
-    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = JSON.parse(window.__firebase_config || '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'factory-maintenance-app';
+        // --- SUA CONFIGURAÇÃO REAL AQUI ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDX_fcMzzOXTaBh2VszUh-j_kmApR0fiv8",
+            authDomain: "manutencao-fabrica.firebaseapp.com",
+            projectId: "manutencao-fabrica",
+            storageBucket: "manutencao-fabrica.firebasestorage.app",
+            messagingSenderId: "322227932590",
+            appId: "1:322227932590:web:2459b650fb9ca7c3b14c3f"
+        };
+
+        // Usaremos o projectId como ID do app para organizar os dados no Firestore
+        const appId = "manutencao-fabrica"; 
         const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         const app = initializeApp(firebaseConfig);
