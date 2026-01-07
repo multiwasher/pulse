@@ -270,6 +270,12 @@
                 return { list: list.sort((a,b) => b.performance - a.performance), avg: totalPotential > 0 ? ((totalScore / totalPotential) * 100).toFixed(1) : "0", total: list.reduce((a, b) => a + b.count, 0) };
             }, [points, historyLogs]);
 
+            const getPerformanceColor = (performance) => {
+                if (performance < 50) return { bg: 'bg-red-600', text: 'text-red-600', bar: 'bg-red-500' };
+                if (performance < 60) return { bg: 'bg-yellow-500', text: 'text-yellow-600', bar: 'bg-yellow-500' };
+                return { bg: 'bg-green-600', text: 'text-green-600', bar: 'bg-green-600' };
+            };
+
             const submitAll = async () => {
                 if (!user || isSubmitting) return;
                 setIsSubmitting(true);
@@ -398,7 +404,7 @@
                             {isAdmin && adminMode === 'dashboard' ? (
                                 <div className="space-y-10 animate-in fade-in duration-500">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div className="bg-indigo-600 text-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] shadow-xl relative overflow-hidden">
+                                        <div className={`${getPerformanceColor(parseFloat(stats.avg)).bg} text-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] shadow-xl relative overflow-hidden`}>
                                             <p className="font-black uppercase text-[10px] tracking-widest mb-2 opacity-70">Global Performance Ratio</p>
                                             <h4 className="text-5xl md:text-7xl font-black">{stats.avg}%</h4>
                                         </div>
@@ -415,17 +421,20 @@
                                     <div className="bg-white border-2 border-slate-100 rounded-[3rem] p-6 md:p-10 shadow-sm">
                                         <h3 className="text-xl md:text-2xl font-black uppercase mb-10 px-4">Performance by Station</h3>
                                         <div className="space-y-4">
-                                            {stats.list.map(s => (
-                                                <div key={s.name} className="bg-slate-50 p-6 rounded-3xl">
-                                                    <div className="flex justify-between items-center mb-4">
-                                                        <h5 className="text-lg font-black uppercase tracking-tight">{s.name}</h5>
-                                                        <span className="font-bold text-indigo-600">{s.performance.toFixed(1)}%</span>
+                                            {stats.list.map(s => {
+                                                const colors = getPerformanceColor(s.performance);
+                                                return (
+                                                    <div key={s.name} className="bg-slate-50 p-6 rounded-3xl">
+                                                        <div className="flex justify-between items-center mb-4">
+                                                            <h5 className="text-lg font-black uppercase tracking-tight">{s.name}</h5>
+                                                            <span className={`font-bold ${colors.text}`}>{s.performance.toFixed(1)}%</span>
+                                                        </div>
+                                                        <div className="h-4 w-full bg-slate-200 rounded-full overflow-hidden">
+                                                            <div className={`h-full rounded-full transition-all duration-1000 ${colors.bar}`} style={{ width: `${s.performance}%` }} />
+                                                        </div>
                                                     </div>
-                                                    <div className="h-4 w-full bg-slate-200 rounded-full overflow-hidden">
-                                                        <div className="h-full rounded-full transition-all duration-1000 bg-indigo-600" style={{ width: `${s.performance}%` }} />
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 </div>
