@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manutenção de Postos - Fábrica</title>
+    <title>Factory Station Maintenance</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,6 +49,13 @@
         }
         .animate-heartbeat { animation: heartbeat 1.5s ease-in-out infinite; }
 
+        @keyframes pulse-success {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .animate-success-pulse { animation: pulse-success 1.5s ease-out forwards; }
+
         .label-gradient {
             border-radius: 0.5rem;
             background: linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%);
@@ -85,7 +92,20 @@
         const MAX_POINTS_PER_EVAL = 3;
 
         const Icons = {
-            Heart: ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>,
+            Heart: ({ size = 24, fill = "currentColor" }) => (
+                <svg width={size} height={size} viewBox="0 0 24 24" fill={fill}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            ),
+            GradientHeart: ({ size = 120 }) => (
+                <svg width={size} height={size} viewBox="0 0 24 24">
+                    <defs>
+                        <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="rgb(81, 184, 234)" />
+                            <stop offset="100%" stopColor="rgb(27, 71, 148)" />
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#blueGradient)" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            ),
             Map: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>,
             Stats: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>,
             Settings: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
@@ -122,6 +142,7 @@
             const [activeEval, setActiveEval] = useState(null);
             const [isSubmitting, setIsSubmitting] = useState(false);
             const [isReady, setIsReady] = useState(false);
+            const [showSuccessPulse, setShowSuccessPulse] = useState(false);
             
             // Edit Point States
             const [showPointModal, setShowPointModal] = useState(null); 
@@ -159,13 +180,11 @@
                 return () => { unsubPoints(); unsubLogs(); };
             }, [isReady, user]);
 
-            // Limpa o estado local ao abrir o ecrã de ronda
             const startNewRound = () => {
                 setPendingEvaluations({});
                 setView('app');
             };
 
-            // Calcula o estado mais recente (Apenas para uso no Dashboard administrativo)
             const currentStatusMap = useMemo(() => {
                 const status = {};
                 const sortedLogs = [...historyLogs].sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
@@ -196,8 +215,13 @@
                     }
                     await batch.commit();
                     setPendingEvaluations({});
-                    setView('splash');
-                } catch (e) { console.error(e); } finally { setIsSubmitting(false); }
+                    setShowSuccessPulse(true);
+                    setTimeout(() => setShowSuccessPulse(false), 1500);
+                } catch (e) { 
+                    console.error(e); 
+                } finally { 
+                    setIsSubmitting(false); 
+                }
             };
 
             const handleMapClick = (e) => {
@@ -258,10 +282,10 @@
                             </div>
                             <div>
                                 <h1 className="font-black uppercase tracking-tighter text-lg md:text-2xl leading-none">
-                                    {isAdmin ? 'Análise Gestão' : 'FACTORY VISIT'}
+                                    {isAdmin ? 'Analysis Management' : 'FACTORY VISIT'}
                                 </h1>
                                 <p className="text-[10px] md:text-xs text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">
-                                    {isAdmin ? 'Configuração e Monitorização' : 'PULSE'}
+                                    {isAdmin ? 'Configuration and Monitoring' : 'PULSE'}
                                 </p>
                             </div>
                         </div>
@@ -273,14 +297,14 @@
                                     className={`px-4 py-3 rounded-xl font-bold text-xs uppercase flex items-center gap-2 transition-all ${adminMode === 'map_edit' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                                 >
                                     <Icons.Settings />
-                                    {adminMode === 'map_edit' ? 'Ver Dashboard' : 'Configurar Mapa'}
+                                    {adminMode === 'map_edit' ? 'View Dashboard' : 'Setup Map'}
                                 </button>
                             )}
                             <button 
                                 onClick={() => isAdmin ? setIsAdmin(false) : setShowLoginModal(true)} 
                                 className="px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-xs md:text-sm uppercase border-2 border-slate-100 hover:border-indigo-600 transition-all"
                             >
-                                {isAdmin ? 'Sair' : 'Gestão'}
+                                {isAdmin ? 'Exit' : 'Management'}
                             </button>
                         </div>
                     </nav>
@@ -293,21 +317,21 @@
                                 <div className="space-y-10 animate-in fade-in duration-500">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div className="bg-indigo-600 text-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] shadow-xl relative overflow-hidden">
-                                            <p className="font-black uppercase text-[10px] tracking-widest mb-2 opacity-70">Rácio Médio Global</p>
+                                            <p className="font-black uppercase text-[10px] tracking-widest mb-2 opacity-70">Global Performance Ratio</p>
                                             <h4 className="text-5xl md:text-7xl font-black">{stats.avg}%</h4>
                                         </div>
                                         <div className="bg-white border-2 border-slate-100 p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] flex items-center gap-6 shadow-sm">
                                             <div className="bg-slate-50 p-4 rounded-3xl text-indigo-600"><Icons.Stats /></div>
-                                            <div><p className="text-slate-400 font-black text-[10px] mb-1">TOTAL INSPEÇÕES</p><h4 className="text-3xl font-black">{stats.total}</h4></div>
+                                            <div><p className="text-slate-400 font-black text-[10px] mb-1">TOTAL INSPECTIONS</p><h4 className="text-3xl font-black">{stats.total}</h4></div>
                                         </div>
                                         <div className="bg-white border-2 border-slate-100 p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] flex items-center gap-6 shadow-sm">
                                             <div className="bg-slate-50 p-4 rounded-3xl text-indigo-600"><Icons.Check /></div>
-                                            <div><p className="text-slate-400 font-black text-[10px] mb-1">POSTOS ATIVOS</p><h4 className="text-3xl font-black">{points.length}</h4></div>
+                                            <div><p className="text-slate-400 font-black text-[10px] mb-1">ACTIVE STATIONS</p><h4 className="text-3xl font-black">{points.length}</h4></div>
                                         </div>
                                     </div>
                                     
                                     <div className="bg-white border-2 border-slate-100 rounded-[3rem] p-6 md:p-10 shadow-sm">
-                                        <h3 className="text-xl md:text-2xl font-black uppercase mb-10 px-4">Performance por Posto</h3>
+                                        <h3 className="text-xl md:text-2xl font-black uppercase mb-10 px-4">Performance by Station</h3>
                                         <div className="space-y-4">
                                             {stats.list.map(s => (
                                                 <div key={s.name} className="bg-slate-50 p-6 rounded-3xl">
@@ -327,7 +351,7 @@
                                 <div className="space-y-6">
                                     {isAdmin && adminMode === 'map_edit' && (
                                         <div className="bg-amber-100 text-amber-800 p-4 rounded-2xl font-bold text-sm flex items-center gap-3 animate-pulse">
-                                            <Icons.Settings /> Modo Edição: Clique no mapa para adicionar ou no posto para editar/eliminar.
+                                            <Icons.Settings /> Edit Mode: Click on map to add or station to edit/remove.
                                         </div>
                                     )}
                                     <div 
@@ -373,7 +397,7 @@
                         </div>
                     </main>
 
-                    {/* BOTÃO SEND */}
+                    {/* SEND BUTTON */}
                     {!isAdmin && Object.keys(pendingEvaluations).length > 0 && (
                         <div className="fixed bottom-10 right-6 md:right-10 z-[100] animate-in slide-in-from-bottom-10">
                             <button onClick={submitAll} disabled={isSubmitting} className="group relative w-20 h-20 md:w-28 md:h-28 bg-indigo-600 text-white rounded-full shadow-[0_20px_50px_rgba(79,70,229,0.5)] flex flex-col items-center justify-center hover:bg-indigo-700 hover:scale-110 transition-all border-4 border-white">
@@ -382,7 +406,7 @@
                                 ) : (
                                     <>
                                         <Icons.Send />
-                                        <span className="text-[10px] font-black uppercase mt-1">Enviar</span>
+                                        <span className="text-[10px] font-black uppercase mt-1">Send</span>
                                     </>
                                 )}
                                 <div className="absolute -top-2 -right-2 w-10 h-10 bg-red-500 text-white text-lg font-black rounded-full border-4 border-white flex items-center justify-center shadow-lg">
@@ -392,48 +416,57 @@
                         </div>
                     )}
 
-                    {/* MODAL DE AVALIAÇÃO */}
+                    {/* SUCCESS PULSE OVERLAY */}
+                    {showSuccessPulse && (
+                        <div className="fixed inset-0 z-[500] flex items-center justify-center pointer-events-none">
+                            <div className="animate-success-pulse">
+                                <Icons.GradientHeart size={250} />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* EVALUATION MODAL - NOW IN ENGLISH */}
                     {activeEval && (
                         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/90 backdrop-blur-xl p-4 animate-in fade-in duration-300">
                             <div className="bg-white rounded-[3rem] p-8 md:p-16 w-full max-w-5xl shadow-2xl flex flex-col items-center">
                                 <header className="mb-10 text-center">
                                     <h3 className="text-4xl md:text-7xl font-black text-slate-900 mb-4 uppercase tracking-tighter leading-none">{activeEval.name}</h3>
-                                    <p className="text-slate-400 font-medium text-lg md:text-2xl uppercase">Qual o estado desta estação?</p>
+                                    <p className="text-slate-400 font-medium text-lg md:text-2xl uppercase">WHAT IS THE STATUS OF THIS STATION?</p>
                                 </header>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-10 w-full max-w-4xl">
                                     <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'happy'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-green-500 hover:bg-green-50 transition-all active:scale-95 shadow-xl">
                                         <SmileyFace type="happy" className="w-16 h-16 md:w-40 md:h-40 text-green-500" />
-                                        <span className="font-black text-xl md:text-2xl uppercase text-green-600">Excelente</span>
+                                        <span className="font-black text-xl md:text-2xl uppercase text-green-600">EXCELLENT</span>
                                     </button>
                                     <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'neutral'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-yellow-500 hover:bg-yellow-50 transition-all active:scale-95 shadow-xl">
                                         <SmileyFace type="neutral" className="w-16 h-16 md:w-40 md:h-40 text-yellow-500" />
-                                        <span className="font-black text-xl md:text-2xl uppercase text-yellow-600">Aceitável</span>
+                                        <span className="font-black text-xl uppercase text-yellow-600 text-center">ACCEPTABLE</span>
                                     </button>
                                     <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'sad'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-red-500 hover:bg-red-50 transition-all active:scale-95 shadow-xl">
                                         <SmileyFace type="sad" className="w-16 h-16 md:w-40 md:h-40 text-red-500" />
-                                        <span className="font-black text-xl md:text-2xl uppercase text-red-600">Crítico</span>
+                                        <span className="font-black text-xl md:text-2xl uppercase text-red-600">CRITICAL</span>
                                     </button>
                                 </div>
-                                <button onClick={() => setActiveEval(null)} className="py-6 px-12 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-xl hover:bg-slate-200 transition-all">Cancelar</button>
+                                <button onClick={() => setActiveEval(null)} className="py-6 px-12 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-xl hover:bg-slate-200 transition-all">CANCEL</button>
                             </div>
                         </div>
                     )}
 
-                    {/* MODAL DE EDIÇÃO ADMINISTRATIVA */}
+                    {/* ADMIN EDIT POINT MODAL */}
                     {showPointModal && (
                         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-6 animate-in zoom-in-95">
                             <div className="bg-white rounded-[3rem] p-10 w-full max-w-lg shadow-2xl relative">
                                 <button onClick={() => setShowPointModal(null)} className="absolute top-8 right-8 text-slate-400 hover:text-slate-600"><Icons.X /></button>
-                                <h3 className="text-2xl font-black mb-8 uppercase text-indigo-600">{showPointModal.id ? 'Editar Posto' : 'Novo Posto'}</h3>
+                                <h3 className="text-2xl font-black mb-8 uppercase text-indigo-600">{showPointModal.id ? 'Edit Station' : 'New Station'}</h3>
                                 <div className="space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Nome do Posto</label>
-                                        <input autoFocus type="text" placeholder="Ex: Prensa A1" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold border-4 border-transparent focus:border-indigo-500 outline-none" value={editPointName} onChange={e => setEditPointName(e.target.value)} />
+                                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Station Name</label>
+                                        <input autoFocus type="text" placeholder="e.g. Laser Stock" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold border-4 border-transparent focus:border-indigo-500 outline-none" value={editPointName} onChange={e => setEditPointName(e.target.value)} />
                                     </div>
                                     <div className="flex gap-4">
-                                        <button onClick={savePoint} className="flex-1 bg-indigo-600 text-white font-black py-6 rounded-2xl text-lg uppercase shadow-xl hover:bg-indigo-700 transition-all">Guardar</button>
+                                        <button onClick={savePoint} className="flex-1 bg-indigo-600 text-white font-black py-6 rounded-2xl text-lg uppercase shadow-xl hover:bg-indigo-700 transition-all">Save</button>
                                         {showPointModal.id && (
-                                            <button onClick={deletePoint} className="bg-red-50 p-6 rounded-2xl text-red-500 hover:bg-red-100 transition-all" title="Eliminar"><Icons.Trash /></button>
+                                            <button onClick={deletePoint} className="bg-red-50 p-6 rounded-2xl text-red-500 hover:bg-red-100 transition-all" title="Delete"><Icons.Trash /></button>
                                         )}
                                     </div>
                                 </div>
@@ -441,16 +474,16 @@
                         </div>
                     )}
 
-                    {/* LOGIN GESTÃO */}
+                    {/* MANAGEMENT LOGIN */}
                     {showLoginModal && (
                         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-6">
                             <div className="bg-white rounded-[2.5rem] p-10 md:p-16 w-full max-w-xl shadow-2xl relative">
                                 <button onClick={() => setShowLoginModal(false)} className="absolute top-8 right-8 text-slate-400"><Icons.X /></button>
-                                <h3 className="text-3xl font-black mb-10 uppercase text-center">Acesso Gestão</h3>
+                                <h3 className="text-3xl font-black mb-10 uppercase text-center">Management Access</h3>
                                 <form onSubmit={(e) => { e.preventDefault(); if(loginForm.user.toUpperCase()==='GESTÃO'&&loginForm.pass==='789'){setIsAdmin(true); setShowLoginModal(false); } }} className="space-y-6">
-                                    <input type="text" placeholder="Utilizador" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold outline-none border-4 border-transparent focus:border-indigo-500 shadow-inner" onChange={e => setLoginForm({...loginForm, user: e.target.value})} />
-                                    <input type="password" placeholder="Pass" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold outline-none border-4 border-transparent focus:border-indigo-500 shadow-inner" onChange={e => setLoginForm({...loginForm, pass: e.target.value})} />
-                                    <button type="submit" className="w-full bg-indigo-600 text-white font-black py-6 rounded-2xl text-lg uppercase shadow-xl hover:bg-indigo-700 transition-all">Entrar</button>
+                                    <input type="text" placeholder="Username" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold outline-none border-4 border-transparent focus:border-indigo-500 shadow-inner" onChange={e => setLoginForm({...loginForm, user: e.target.value})} />
+                                    <input type="password" placeholder="Password" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold outline-none border-4 border-transparent focus:border-indigo-500 shadow-inner" onChange={e => setLoginForm({...loginForm, pass: e.target.value})} />
+                                    <button type="submit" className="w-full bg-indigo-600 text-white font-black py-6 rounded-2xl text-lg uppercase shadow-xl hover:bg-indigo-700 transition-all">Login</button>
                                 </form>
                             </div>
                         </div>
