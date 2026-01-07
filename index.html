@@ -248,10 +248,17 @@
             };
 
             const savePoint = async () => {
-                if (!editPointName || !isReady) return;
-                const { db, appId, methods } = window.FB;
-                const pointsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'config_points');
+                if (!editPointName || !isReady || !window.FB) {
+                    console.warn('Save point conditions not met:', { editPointName, isReady, hasFB: !!window.FB });
+                    return;
+                }
                 try {
+                    const { db, appId, methods } = window.FB;
+                    if (!db || !appId || !methods) {
+                        console.error('Firebase not properly initialized', window.FB);
+                        return;
+                    }
+                    const pointsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'config_points');
                     if (showPointModal.id) {
                         const docRef = methods.doc(db, 'artifacts', appId, 'public', 'data', 'config_points', showPointModal.id);
                         await methods.updateDoc(docRef, { name: editPointName });
@@ -259,17 +266,24 @@
                         await methods.addDoc(pointsRef, { name: editPointName, x: showPointModal.x, y: showPointModal.y });
                     }
                     setShowPointModal(null);
-                } catch (e) { console.error(e); }
+                    setEditPointName("");
+                } catch (e) { 
+                    console.error('Error saving point:', e);
+                    alert('Failed to save station: ' + e.message);
+                }
             };
 
             const deletePoint = async () => {
-                if (!showPointModal?.id) return;
-                const { db, appId, methods } = window.FB;
+                if (!showPointModal?.id || !window.FB) return;
                 try {
+                    const { db, appId, methods } = window.FB;
                     const docRef = methods.doc(db, 'artifacts', appId, 'public', 'data', 'config_points', showPointModal.id);
                     await methods.deleteDoc(docRef);
                     setShowPointModal(null);
-                } catch (e) { console.error(e); }
+                } catch (e) { 
+                    console.error('Error deleting point:', e);
+                    alert('Failed to delete station: ' + e.message);
+                }
             };
 
             if (view === 'splash') {
