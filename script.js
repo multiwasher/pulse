@@ -78,6 +78,7 @@ const SmileyFace = ({ type, className = "" }) => {
 
 function App() {
   const [view, setView] = useState('splash');
+  const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminMode, setAdminMode] = useState('map');
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -102,26 +103,58 @@ function App() {
     return () => { clearTimeout(timeout); events.forEach(e => window.removeEventListener(e, reset)); };
   }, [view, isAdmin, resetToSplash]);
 
+  // 1. Efeito de Autenticação: Garante login antes de qualquer query
   useEffect(() => {
-    if (!db) return;
-    auth.signInAnonymously().catch(e => console.error("Erro Auth:", e));
+    if (!auth) return;
+    
+    const initAuth = async () => {
+      try {
+        await auth.signInAnonymously();
+      } catch (e) {
+        console.error("Erro na autenticação anónima:", e);
+      }
+    };
+
+    initAuth();
+    
+    // Listener para o estado da autenticação
+    const unsubscribeAuth = auth.onAuthStateChanged((currUser) => {
+      setUser(currUser);
+    });
+
+    return () => unsubscribeAuth();
+  }, []);
+
+  // 2. Efeito de Dados: Só corre quando o 'user' estiver autenticado
+  useEffect(() => {
+    if (!db || !user) return;
 
     const appIdPath = "factory-maintenance-app";
     const dataRef = db.collection('artifacts').doc(appIdPath).collection('public').doc('data');
 
-    const unsubPoints = dataRef.collection('config_points').onSnapshot(snap => 
-      setPoints(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
-    );
+    // Funções de erro para os listeners (obrigatório para depuração)
+    const handleError = (err) => console.error("Erro no listener Firestore:", err);
+
+    const unsubPoints = dataRef.collection('config_points').onSnapshot(snap => {
+      setPoints(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, handleError);
+
     const unsubEvals = dataRef.collection('daily_evals').onSnapshot(snap => {
-      const evs = {}; snap.docs.forEach(doc => evs[doc.id] = doc.data().status);
+      const evs = {}; 
+      snap.docs.forEach(doc => evs[doc.id] = doc.data().status);
       setEvaluations(evs);
-    });
-    const unsubLogs = dataRef.collection('history_logs').onSnapshot(snap => 
-      setHistoryLogs(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
-    );
+    }, handleError);
+
+    const unsubLogs = dataRef.collection('history_logs').onSnapshot(snap => {
+      setHistoryLogs(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, handleError);
     
-    return () => { unsubPoints(); unsubEvals(); unsubLogs(); };
-  }, []);
+    return () => { 
+      unsubPoints(); 
+      unsubEvals(); 
+      unsubLogs(); 
+    };
+  }, [user]); // Depende do estado 'user'
 
   const stats = useMemo(() => {
     const s = {}; 
@@ -144,7 +177,7 @@ function App() {
   }, [points, historyLogs]);
 
   const submitEval = async (id, status) => {
-    if (db) {
+    if (db && user) {
       const path = db.collection('artifacts').doc('factory-maintenance-app').collection('public').doc('data');
       await path.collection('daily_evals').doc(id).set({ status, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
       await path.collection('history_logs').add({ 
@@ -159,7 +192,7 @@ function App() {
   };
 
   const savePoint = async () => {
-    if (!newPointModal.name.trim()) return;
+    if (!newPointModal.name.trim() || !user) return;
     const path = db.collection('artifacts').doc('factory-maintenance-app').collection('public').doc('data');
     await path.collection('config_points').add({
       name: newPointModal.name.toUpperCase(),
@@ -202,6 +235,12 @@ function App() {
       </nav>
 
       <main className="max-w-[1400px] mx-auto p-4 md:p-10 pb-32">
+        {!user && (
+          <div className="bg-blue-50 text-blue-600 p-4 rounded-xl text-center font-bold animate-pulse">
+            A ligar ao servidor...
+          </div>
+        )}
+        
         {isAdmin && adminMode === 'dashboard' ? (
           <div className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
