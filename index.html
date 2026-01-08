@@ -2,13 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Factory Pulse">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#ffffff">
-    <link rel="manifest" href="manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Factory Station Maintenance</title>
     
     <!-- Tailwind CSS -->
@@ -18,24 +12,27 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- Firebase SDK (Modular) -->
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- SUA CONFIGURAÇÃO REAL AQUI ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDX_fcMzzOXTaBh2VszUh-j_kmApR0fiv8",
-            authDomain: "manutencao-fabrica.firebaseapp.com",
-            projectId: "manutencao-fabrica",
-            storageBucket: "manutencao-fabrica.firebasestorage.app",
-            messagingSenderId: "322227932590",
-            appId: "1:322227932590:web:2459b650fb9ca7c3b14c3f"
-        };
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "", 
+                authDomain: "manutencao-fabrica.firebaseapp.com",
+                projectId: "manutencao-fabrica",
+                storageBucket: "manutencao-fabrica.firebasestorage.app",
+                messagingSenderId: "322227932590",
+                appId: "1:322227932590:web:2459b650fb9ca7c3b14c3f"
+            };
 
-        // Usaremos o projectId como ID do app para organizar os dados no Firestore
-        const appId = "manutencao-fabrica"; 
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'factory-maintenance-v1';
         const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         const app = initializeApp(firebaseConfig);
@@ -50,32 +47,7 @@
                 onAuthStateChanged, updateDoc 
             } 
         };
-
-        // Request fullscreen on mobile devices and tablets
-        const requestFullscreenOnMobile = () => {
-            if (/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini|Tablet|Silk|Kindle/i.test(navigator.userAgent) || 
-                (navigator.maxTouchPoints && navigator.maxTouchPoints > 2)) {
-                const doc = document.documentElement;
-                if (doc.requestFullscreen) {
-                    doc.requestFullscreen().catch(err => console.log('Fullscreen request denied:', err));
-                } else if (doc.webkitRequestFullscreen) {
-                    doc.webkitRequestFullscreen();
-                } else if (doc.mozRequestFullScreen) {
-                    doc.mozRequestFullScreen();
-                } else if (doc.msRequestFullscreen) {
-                    doc.msRequestFullscreen();
-                }
-            }
-        };
-
-        // Try to request fullscreen on various events
-        setTimeout(requestFullscreenOnMobile, 500);
-        document.addEventListener('DOMContentLoaded', requestFullscreenOnMobile);
-        document.addEventListener('touchstart', requestFullscreenOnMobile, { once: true });
     </script>
-
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
         @keyframes heartbeat { 
@@ -105,22 +77,7 @@
         }
         .animate-success-pulse { animation: pulse-success 1.5s ease-out forwards; }
 
-        @keyframes fade-out {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-        .animate-out.fade-out.duration-500 { animation: fade-out 0.5s ease-out forwards; }
-        .gif-fade-out { animation: fade-out 1.5s ease-out forwards; }
-        .gif-no-loop { animation: play-once 3.5s steps(1) 1 forwards; }
-        
-        @keyframes play-once {
-            0% { opacity: 1; }
-            99% { opacity: 1; }
-            100% { opacity: 1; }
-        }
-
         .label-gradient {
-            border-radius: 0.5rem;
             background: linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%);
         }
 
@@ -135,42 +92,43 @@
             margin: 0; 
             padding: 0;
             background-color: #ffffff;
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
         }
 
-        /* Mobile: Allow scrollbars, no scaling */
-        @media (max-width: 768px) {
-            body {
-                overflow-x: auto;
-                overflow-y: auto;
-                width: 100%;
-            }
-            #root { 
-                min-height: 100vh;
-                width: 100%;
-            }
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
 
-        /* Tablet and Desktop: Fit to screen */
-        @media (min-width: 769px) {
-            body {
-                overflow: hidden;
-                width: 100vw;
-                height: 100vh;
-            }
-            #root { 
-                width: 100vw;
-                height: 100vh;
-                overflow: auto;
-            }
-        }
-
-        /* Mobile landscape: Allow scrolling */
-        @media (max-width: 768px) and (orientation: landscape) {
-            .splash-screen-landscape {
+        @media (max-height: 500px) and (orientation: landscape) {
+            body, #root {
                 overflow-y: auto !important;
-                min-height: auto !important;
-                height: 100vh;
+                height: auto !important;
+                min-height: 100vh;
+            }
+            .app-wrapper {
+                height: auto !important;
+                min-height: 100vh;
+                overflow-y: visible !important;
+            }
+            .map-container {
+                aspect-ratio: auto;
+                height: 80vh;
+                min-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            .map-container {
+                aspect-ratio: auto;
+                height: 60vh;
             }
         }
     </style>
@@ -179,38 +137,29 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useCallback, useMemo, useRef } = React;
+        const { useState, useEffect, useMemo, useRef } = React;
 
-        const LAYOUT_IMAGE = "https://static.wixstatic.com/media/a6967f_aac24f82eec442c8992856c104e39d20~mv2.png";
-        const SPLASH_IMAGE = "https://static.wixstatic.com/media/a6967f_1a75ce18a54d46f8994283c1798fbbfb~mv2.png";
-        const CORNER_LOGO = "https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png";
-        const ROUND_ICON = "https://static.wixstatic.com/media/a6967f_874354ad69c5461eafd229ab23540233~mv2.png";
+        const ASSETS = {
+            LAYOUT: "https://static.wixstatic.com/media/a6967f_aac24f82eec442c8992856c104e39d20~mv2.png",
+            SPLASH: "https://static.wixstatic.com/media/a6967f_1a75ce18a54d46f8994283c1798fbbfb~mv2.png",
+            LOGO: "https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png",
+            ICON: "https://static.wixstatic.com/media/a6967f_874354ad69c5461eafd229ab23540233~mv2.png",
+            LOADING_GIF: "https://static.wixstatic.com/media/a6967f_9142290f38c8426c98c49711bd0b7974~mv2.gif"
+        };
 
-        const POINT_VALUES = { sad: 0, neutral: 1, happy: 3 };
-        const MAX_POINTS_PER_EVAL = 3;
+        const STATUS_VALUES = { sad: 0, neutral: 1, happy: 3 };
 
         const Icons = {
             Heart: ({ size = 24, fill = "currentColor" }) => (
                 <svg width={size} height={size} viewBox="0 0 24 24" fill={fill}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
             ),
-            GradientHeart: ({ size = 120 }) => (
-                <svg width={size} height={size} viewBox="0 0 24 24">
-                    <defs>
-                        <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="rgb(81, 184, 234)" />
-                            <stop offset="100%" stopColor="rgb(27, 71, 148)" />
-                        </linearGradient>
-                    </defs>
-                    <path fill="url(#blueGradient)" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-            ),
-            Map: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>,
-            Stats: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>,
-            Settings: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
-            Trash: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>,
-            Check: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>,
-            Send: () => <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>,
-            X: ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            Map: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>,
+            Stats: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>,
+            Settings: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
+            Trash: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>,
+            Check: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>,
+            Send: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>,
+            X: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         };
 
         const SmileyFace = ({ type, className = "" }) => {
@@ -231,57 +180,39 @@
             const [view, setView] = useState('splash');
             const [user, setUser] = useState(null);
             const [isAdmin, setIsAdmin] = useState(false);
-            const [adminMode, setAdminMode] = useState('dashboard'); // dashboard | map_edit
-            const [showLoginModal, setShowLoginModal] = useState(false);
+            const [adminMode, setAdminMode] = useState('dashboard'); 
             const [points, setPoints] = useState([]);
             const [historyLogs, setHistoryLogs] = useState([]);
             const [pendingEvaluations, setPendingEvaluations] = useState({});
-            const [loginForm, setLoginForm] = useState({ user: '', pass: '' });
             const [activeEval, setActiveEval] = useState(null);
             const [isSubmitting, setIsSubmitting] = useState(false);
-            const [isReady, setIsReady] = useState(false);
-            const [showSuccessPulse, setShowSuccessPulse] = useState(false);            const [showLayoutGif, setShowLayoutGif] = useState(false);
-            const [gifFadingOut, setGifFadingOut] = useState(false);
-            const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);            
-            // Edit Point States
-            const [showPointModal, setShowPointModal] = useState(null); 
-            const [editPointName, setEditPointName] = useState("");
+            const [showSuccessPulse, setShowSuccessPulse] = useState(false);
+            const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
+            
+            const [loginModal, setLoginModal] = useState({ open: false, user: '', pass: '' });
+            const [pointModal, setPointModal] = useState(null); 
+            
             const mapContainerRef = useRef(null);
 
             useEffect(() => {
-                const checkReady = setInterval(() => { if (window.FB) { setIsReady(true); clearInterval(checkReady); } }, 50);
-                return () => clearInterval(checkReady);
-            }, []);
-
-            useEffect(() => {
-                const handleOrientationChange = () => {
-                    setIsLandscape(window.innerWidth > window.innerHeight);
-                };
-                window.addEventListener('orientationchange', handleOrientationChange);
-                window.addEventListener('resize', handleOrientationChange);
-                return () => {
-                    window.removeEventListener('orientationchange', handleOrientationChange);
-                    window.removeEventListener('resize', handleOrientationChange);
-                };
-            }, []);
-
-            useEffect(() => {
-                if (!isReady) return;
+                if (!window.FB) return;
                 const { auth, initialToken, methods } = window.FB;
                 const initAuth = async () => {
-                    try { if (initialToken) await methods.signInWithCustomToken(auth, initialToken); else await methods.signInAnonymously(auth); } catch (e) {}
+                    try {
+                        if (initialToken) await methods.signInWithCustomToken(auth, initialToken);
+                        else await methods.signInAnonymously(auth);
+                    } catch (e) { console.error("Erro na autenticação:", e); }
                 };
                 initAuth();
                 const unsubscribe = methods.onAuthStateChanged(auth, setUser);
                 return () => unsubscribe();
-            }, [isReady]);
+            }, []);
 
             useEffect(() => {
-                if (!isReady || !user) return;
+                if (!user || !window.FB) return;
                 const { db, appId, methods } = window.FB;
                 const pointsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'config_points');
                 const logsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'history_logs');
-
                 const unsubPoints = methods.onSnapshot(pointsRef, (snap) => {
                     setPoints(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
                 });
@@ -289,288 +220,206 @@
                     setHistoryLogs(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
                 });
                 return () => { unsubPoints(); unsubLogs(); };
-            }, [isReady, user]);
+            }, [user]);
 
-            const startNewRound = () => {
-                setPendingEvaluations({});
-                // Show loading GIF on mobile
-                if (window.innerWidth < 768) {
-                    setShowLayoutGif(true);
-                    setGifFadingOut(false);
-                    // Let GIF animate and pause for 3.5s, then fade out for 1.5s
-                    setTimeout(() => {
-                        setGifFadingOut(true);
-                    }, 3500);
-                    setTimeout(() => {
-                        setShowLayoutGif(false);
-                        setView('app');
-                    }, 5000);
-                } else {
-                    setView('app');
-                }
-            };
-
-            // Inactivity timer for app view - return to splash after 30s
             useEffect(() => {
                 if (view !== 'app') return;
-                
-                let inactivityTimer;
-                const resetTimer = () => {
-                    clearTimeout(inactivityTimer);
-                    inactivityTimer = setTimeout(() => {
-                        setView('splash');
-                        setPendingEvaluations({});
-                    }, 30000); // 30 seconds
+                let timer;
+                const reset = () => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => { setView('splash'); setPendingEvaluations({}); }, 30000);
                 };
-
-                // Reset timer on user activity
-                const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'touchmove', 'click'];
-                events.forEach(event => document.addEventListener(event, resetTimer));
-                resetTimer(); // Start the initial timer
-
-                return () => {
-                    clearTimeout(inactivityTimer);
-                    events.forEach(event => document.removeEventListener(event, resetTimer));
-                };
+                const events = ['mousedown', 'keydown', 'touchstart'];
+                events.forEach(e => window.addEventListener(e, reset));
+                reset();
+                return () => { clearTimeout(timer); events.forEach(e => window.removeEventListener(e, reset)); };
             }, [view]);
-
-            const currentStatusMap = useMemo(() => {
-                const status = {};
-                const sortedLogs = [...historyLogs].sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
-                sortedLogs.forEach(log => { status[log.pointId] = log.status; });
-                return status;
-            }, [historyLogs]);
 
             const stats = useMemo(() => {
                 const s = {}; 
                 points.forEach(p => s[p.id] = { name: p.name, score: 0, count: 0 });
-                historyLogs.forEach(log => { if (s[log.pointId]) { s[log.pointId].score += log.score; s[log.pointId].count++; } });
-                const list = Object.values(s).filter(x => x.count > 0).map(st => ({ ...st, performance: (st.score / (st.count * 3)) * 100 }));
+                historyLogs.forEach(log => {
+                    if (s[log.pointId]) { s[log.pointId].score += log.score; s[log.pointId].count++; }
+                });
+                const list = Object.values(s).filter(x => x.count > 0).map(st => ({
+                    ...st,
+                    performance: (st.score / (st.count * 3)) * 100
+                }));
                 const totalScore = list.reduce((a, b) => a + b.score, 0);
                 const totalPotential = list.reduce((a, b) => a + (b.count * 3), 0);
-                return { list: list.sort((a,b) => b.performance - a.performance), avg: totalPotential > 0 ? ((totalScore / totalPotential) * 100).toFixed(1) : "0", total: list.reduce((a, b) => a + b.count, 0) };
+                return {
+                    list: list.sort((a,b) => b.performance - a.performance),
+                    avg: totalPotential > 0 ? ((totalScore / totalPotential) * 100).toFixed(1) : "0",
+                    total: historyLogs.length
+                };
             }, [points, historyLogs]);
 
-            const getPerformanceColor = (performance) => {
-                if (performance < 50) return { bg: 'bg-red-600', text: 'text-red-600', bar: 'bg-red-500' };
-                if (performance < 60) return { bg: 'bg-yellow-500', text: 'text-yellow-600', bar: 'bg-yellow-500' };
-                return { bg: 'bg-green-600', text: 'text-green-600', bar: 'bg-green-600' };
+            const getHealthColor = (val) => {
+                if (val < 50) return { bg: 'bg-red-600', text: 'text-red-600', bar: 'bg-red-500' };
+                if (val < 75) return { bg: 'bg-amber-500', text: 'text-amber-600', bar: 'bg-amber-500' };
+                return { bg: 'bg-emerald-600', text: 'text-emerald-600', bar: 'bg-emerald-600' };
             };
 
-            const submitAll = async () => {
-                if (!user || isSubmitting) return;
+            const handleStart = () => {
+                setShowLoadingOverlay(true);
+                setTimeout(() => {
+                    setShowLoadingOverlay(false);
+                    setView('app');
+                }, 4000);
+            };
+
+            const submitEvaluations = async () => {
+                if (isSubmitting || !window.FB) return;
                 setIsSubmitting(true);
                 const { db, appId, methods } = window.FB;
                 const batch = methods.writeBatch(db);
                 const logsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'history_logs');
                 try {
-                    for (const [id, status] of Object.entries(pendingEvaluations)) {
-                        const newLogRef = methods.doc(logsRef);
-                        batch.set(newLogRef, { pointId: id, status, score: POINT_VALUES[status], timestamp: methods.serverTimestamp() });
-                    }
+                    Object.entries(pendingEvaluations).forEach(([id, status]) => {
+                        const newLog = methods.doc(logsRef);
+                        batch.set(newLog, { pointId: id, status, score: STATUS_VALUES[status], timestamp: methods.serverTimestamp() });
+                    });
                     await batch.commit();
                     setPendingEvaluations({});
                     setShowSuccessPulse(true);
-                    setTimeout(() => setShowSuccessPulse(false), 1500);
-                } catch (e) { 
-                    console.error(e); 
-                } finally { 
-                    setIsSubmitting(false); 
-                }
+                    setTimeout(() => setShowSuccessPulse(false), 2000);
+                } catch (e) { console.error("Erro no envio:", e); } finally { setIsSubmitting(false); }
             };
 
-            const handleMapClick = (e) => {
-                if (!isAdmin || adminMode !== 'map_edit') return;
-                const rect = mapContainerRef.current.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                setEditPointName("");
-                setShowPointModal({ x, y });
-            };
-
-            const savePoint = async () => {
-                if (!editPointName || !isReady || !window.FB) {
-                    console.warn('Save point conditions not met:', { editPointName, isReady, hasFB: !!window.FB });
-                    return;
-                }
+            const togglePoint = async (data) => {
+                if (!window.FB) return;
+                const { db, appId, methods } = window.FB;
+                const ref = methods.collection(db, 'artifacts', appId, 'public', 'data', 'config_points');
                 try {
-                    const { db, appId, methods } = window.FB;
-                    if (!db || !appId || !methods) {
-                        console.error('Firebase not properly initialized', window.FB);
-                        return;
-                    }
-                    const pointsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'config_points');
-                    if (showPointModal.id) {
-                        const docRef = methods.doc(db, 'artifacts', appId, 'public', 'data', 'config_points', showPointModal.id);
-                        await methods.updateDoc(docRef, { name: editPointName });
-                    } else {
-                        await methods.addDoc(pointsRef, { name: editPointName, x: showPointModal.x, y: showPointModal.y });
-                    }
-                    setShowPointModal(null);
-                    setEditPointName("");
-                } catch (e) { 
-                    console.error('Error saving point:', e);
-                    alert('Failed to save station: ' + e.message);
-                }
+                    if (data.id) await methods.updateDoc(methods.doc(db, 'artifacts', appId, 'public', 'data', 'config_points', data.id), { name: data.name });
+                    else await methods.addDoc(ref, { name: data.name, x: data.x, y: data.y });
+                    setPointModal(null);
+                } catch (e) { console.error(e); }
             };
 
-            const deletePoint = async () => {
-                if (!showPointModal?.id || !window.FB) return;
+            const removePoint = async (id) => {
+                if (!window.FB) return;
+                const { db, appId, methods } = window.FB;
                 try {
-                    const { db, appId, methods } = window.FB;
-                    const docRef = methods.doc(db, 'artifacts', appId, 'public', 'data', 'config_points', showPointModal.id);
-                    await methods.deleteDoc(docRef);
-                    setShowPointModal(null);
-                } catch (e) { 
-                    console.error('Error deleting point:', e);
-                    alert('Failed to delete station: ' + e.message);
-                }
+                    await methods.deleteDoc(methods.doc(db, 'artifacts', appId, 'public', 'data', 'config_points', id));
+                    setPointModal(null);
+                } catch (e) { console.error(e); }
             };
 
             if (view === 'splash') {
                 return (
-                    <div className={`relative min-h-screen overflow-hidden ${isLandscape && window.innerWidth < 768 ? 'overflow-y-auto' : ''}`}>
-                        {/* Loading GIF overlay on mobile */}
-                        {showLayoutGif && (
-                            <div className="fixed inset-0 z-[300] flex items-center justify-center bg-white pointer-events-none animate-in fade-in duration-300">
-                                <img 
-                                    src="https://static.wixstatic.com/media/a6967f_9142290f38c8426c98c49711bd0b7974~mv2.gif" 
-                                    alt="Loading" 
-                                    className={gifFadingOut ? "w-4/5 h-4/5 object-contain gif-fade-out" : "w-4/5 h-4/5 object-contain gif-no-loop"}
-                                />
+                    <div className="relative h-screen w-full bg-white flex flex-col items-center justify-center cursor-pointer overflow-hidden" onClick={handleStart}>
+                        {showLoadingOverlay && (
+                            <div className="fixed inset-0 z-50 bg-white flex items-center justify-center">
+                                <img src={ASSETS.LOADING_GIF} className="w-64 h-64 object-contain" alt="A carregar..." />
                             </div>
                         )}
-                        <div onClick={startNewRound} className="min-h-screen bg-white flex flex-col items-center justify-center cursor-pointer relative overflow-hidden">
-                            <div className="absolute top-4 md:top-8 left-1/2 transform -translate-x-1/2 md:left-8 md:transform-none z-10 w-[90%] md:w-auto"><img src={CORNER_LOGO} className="w-full md:w-[286px] h-auto" /></div>
-                        <div className="flex-1 flex items-center justify-center w-full relative -translate-y-[5%]">
-                            <img src={SPLASH_IMAGE} className="max-w-[85%] md:max-w-full max-h-[80vh] object-contain drop-shadow-2xl rounded-[3rem]" />
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-heartbeat">
-                                <Icons.GradientHeart size={120} />
+                        <img src={ASSETS.LOGO} className="absolute top-10 left-10 w-48 hidden md:block" alt="Logo" />
+                        <div className="relative z-10 scale-90 md:scale-100 flex flex-col items-center">
+                            <div className="relative">
+                                {/* TEXTO POSICIONADO 20% ACIMA DO HEARTBEAT (CENTRO) */}
+                                <p className="absolute left-1/2 -translate-x-1/2 top-[20%] font-black text-slate-400 tracking-[0.3em] uppercase animate-pulse whitespace-nowrap z-30">
+                                    Touch to Begin
+                                </p>
+                                <img src={ASSETS.SPLASH} className="max-w-md md:max-w-xl rounded-[3rem] shadow-2xl" alt="Splash" />
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-heartbeat">
+                                    <Icons.Heart size={100} fill="url(#grad1)" />
+                                    <svg width="0" height="0"><defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style={{stopColor:'rgb(81, 184, 234)',stopOpacity:1}} /><stop offset="100%" style={{stopColor:'rgb(27, 71, 148)',stopOpacity:1}} /></linearGradient></defs></svg>
+                                </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 );
             }
 
             return (
-                <div className={`min-h-screen md:h-screen bg-white font-sans text-slate-900 select-none flex flex-col overflow-hidden ${isLandscape && window.innerWidth < 768 ? 'md:overflow-auto overflow-y-auto' : 'md:overflow-auto'}`}>
-                    {/* NAVBAR */}
-                    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 md:px-8 h-20 md:h-24 flex items-center justify-between shadow-sm">
-                        <div className="flex items-center gap-1 md:gap-1">
-                            <div className={`${isAdmin ? 'bg-amber-500 p-2.5 md:p-3.5' : 'bg-transparent p-0'} rounded-2xl text-white overflow-hidden flex items-center justify-center`}>
-                                {isAdmin ? <Icons.Map /> : <img src={ROUND_ICON} className="w-12 h-12 md:w-16 md:h-16 object-contain" alt="Pulse Icon" />}
-                            </div>
+                <div className="app-wrapper min-h-screen bg-slate-50 flex flex-col text-slate-900 md:h-screen md:overflow-hidden">
+                    <header className="bg-white px-6 py-4 flex items-center justify-between border-b border-slate-200 shadow-sm z-30 shrink-0">
+                        <div className="flex items-center gap-4">
+                            <img src={ASSETS.ICON} className="w-10 h-10 md:w-12 md:h-12" alt="Icon" />
                             <div>
-                                <h1 className="font-black uppercase tracking-tighter text-lg md:text-2xl leading-none">
-                                    {isAdmin ? 'Analysis Management' : 'FACTORY VISIT'}
-                                </h1>
-                                <p className="text-[10px] md:text-xs text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">
-                                    {isAdmin ? 'Configuration and Monitoring' : 'PULSE'}
-                                </p>
+                                <h1 className="font-black text-lg md:text-xl tracking-tighter uppercase">{isAdmin ? 'Operations Dashboard' : 'Factory Pulse'}</h1>
+                                <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Maintenance Audit</p>
                             </div>
                         </div>
-
-                        <div className="flex items-center gap-3">
+                        <div className="flex gap-2">
                             {isAdmin && (
-                                <button 
-                                    onClick={() => setAdminMode(adminMode === 'dashboard' ? 'map_edit' : 'dashboard')}
-                                    className={`px-4 py-3 rounded-xl font-bold text-xs uppercase flex items-center gap-2 transition-all ${adminMode === 'map_edit' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                                >
-                                    <Icons.Settings />
-                                    {adminMode === 'map_edit' ? 'View Dashboard' : 'Setup Map'}
+                                <button onClick={() => setAdminMode(m => m === 'dashboard' ? 'edit' : 'dashboard')} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-[10px] md:text-xs font-bold uppercase flex items-center gap-2 transition-all">
+                                    <Icons.Settings /> {adminMode === 'dashboard' ? 'Edit Map' : 'Analytics'}
                                 </button>
                             )}
-                            <button 
-                                onClick={() => isAdmin ? setIsAdmin(false) : setShowLoginModal(true)} 
-                                className="px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-xs md:text-sm uppercase border-2 border-slate-100 hover:border-indigo-600 transition-all"
-                            >
-                                {isAdmin ? 'Exit' : 'Management'}
+                            <button onClick={() => isAdmin ? setIsAdmin(false) : setLoginModal(m => ({...m, open: true}))} className={`px-4 md:px-6 py-2 rounded-xl text-[10px] md:text-xs font-black uppercase transition-all ${isAdmin ? 'bg-amber-100 text-amber-600' : 'border-2 border-slate-200 hover:border-indigo-600'}`}>
+                                {isAdmin ? 'Logout' : 'Admin'}
                             </button>
                         </div>
-                    </nav>
+                    </header>
 
-                    {/* MAIN */}
-                    <main className="flex-1 overflow-y-auto md:overflow-hidden relative bg-slate-50/30">
-                        <div className="max-w-[1400px] mx-auto p-4 md:p-6 md:pb-10 h-full md:flex md:flex-col">
-                            
+                    <main className="flex-1 relative overflow-y-auto overflow-x-hidden md:overflow-hidden">
+                        <div className="max-w-7xl mx-auto p-4 md:p-6 h-full flex flex-col">
                             {isAdmin && adminMode === 'dashboard' ? (
-                                <div className="space-y-10 animate-in fade-in duration-500">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div className={`${getPerformanceColor(parseFloat(stats.avg)).bg} text-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] shadow-xl relative overflow-hidden`}>
-                                            <p className="font-black uppercase text-[10px] tracking-widest mb-2 opacity-70">Global Performance Ratio</p>
-                                            <h4 className="text-5xl md:text-7xl font-black">{stats.avg}%</h4>
+                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 md:mb-8">
+                                        <div className={`${getHealthColor(parseFloat(stats.avg)).bg} p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] text-white shadow-xl`}>
+                                            <p className="text-[10px] font-black uppercase opacity-70 tracking-widest mb-1">Global Health Index</p>
+                                            <h2 className="text-4xl md:text-6xl font-black">{stats.avg}%</h2>
                                         </div>
-                                        <div className="bg-white border-2 border-slate-100 p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] flex items-center gap-6 shadow-sm">
-                                            <div className="bg-slate-50 p-4 rounded-3xl text-indigo-600"><Icons.Stats /></div>
-                                            <div><p className="text-slate-400 font-black text-[10px] mb-1">TOTAL INSPECTIONS</p><h4 className="text-3xl font-black">{stats.total}</h4></div>
+                                        <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex items-center gap-4 md:gap-6 shadow-sm">
+                                            <div className="p-3 md:p-4 bg-slate-100 rounded-2xl text-indigo-600"><Icons.Stats /></div>
+                                            <div><p className="text-[10px] font-black text-slate-400 uppercase">Inspections</p><h3 className="text-2xl md:text-3xl font-black">{stats.total}</h3></div>
                                         </div>
-                                        <div className="bg-white border-2 border-slate-100 p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] flex items-center gap-6 shadow-sm">
-                                            <div className="bg-slate-50 p-4 rounded-3xl text-indigo-600"><Icons.Check /></div>
-                                            <div><p className="text-slate-400 font-black text-[10px] mb-1">ACTIVE STATIONS</p><h4 className="text-3xl font-black">{points.length}</h4></div>
+                                        <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex items-center gap-4 md:gap-6 shadow-sm">
+                                            <div className="p-3 md:p-4 bg-slate-100 rounded-2xl text-indigo-600"><Icons.Check /></div>
+                                            <div><p className="text-[10px] font-black text-slate-400 uppercase">Active Points</p><h3 className="text-2xl md:text-3xl font-black">{points.length}</h3></div>
                                         </div>
                                     </div>
-                                    
-                                    <div className="bg-white border-2 border-slate-100 rounded-[3rem] p-6 md:p-10 shadow-sm">
-                                        <h3 className="text-xl md:text-2xl font-black uppercase mb-10 px-4">Performance by Station</h3>
+                                    <div className="bg-white border border-slate-200 rounded-[2rem] md:rounded-[3rem] p-6 md:p-8 shadow-sm">
+                                        <h3 className="text-lg md:text-xl font-black uppercase mb-6">Station Performance Breakdown</h3>
                                         <div className="space-y-4">
-                                            {stats.list.map(s => {
-                                                const colors = getPerformanceColor(s.performance);
-                                                return (
-                                                    <div key={s.name} className="bg-slate-50 p-6 rounded-3xl">
-                                                        <div className="flex justify-between items-center mb-4">
-                                                            <h5 className="text-lg font-black uppercase tracking-tight">{s.name}</h5>
-                                                            <span className={`font-bold ${colors.text}`}>{s.performance.toFixed(1)}%</span>
-                                                        </div>
-                                                        <div className="h-4 w-full bg-slate-200 rounded-full overflow-hidden">
-                                                            <div className={`h-full rounded-full transition-all duration-1000 ${colors.bar}`} style={{ width: `${s.performance}%` }} />
-                                                        </div>
+                                            {stats.list.map(s => (
+                                                <div key={s.name} className="group">
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <span className="font-bold uppercase text-xs md:text-sm">{s.name}</span>
+                                                        <span className={`font-black text-sm ${getHealthColor(s.performance).text}`}>{s.performance.toFixed(1)}%</span>
                                                     </div>
-                                                );
-                                            })}
+                                                    <div className="h-2.5 md:h-3 bg-slate-100 rounded-full overflow-hidden">
+                                                        <div className={`h-full transition-all duration-1000 ${getHealthColor(s.performance).bar}`} style={{width: `${s.performance}%`}} />
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="space-y-6">
-                                    {isAdmin && adminMode === 'map_edit' && (
-                                        <div className="bg-amber-100 text-amber-800 p-4 rounded-2xl font-bold text-sm flex items-center gap-3 animate-pulse">
-                                            <Icons.Settings /> Edit Mode: Click on map to add or station to edit/remove.
+                                <div className="h-full flex flex-col gap-4 min-h-[400px]">
+                                    {isAdmin && adminMode === 'edit' && (
+                                        <div className="bg-amber-50 text-amber-700 px-4 py-2 rounded-xl text-[10px] font-bold animate-pulse flex items-center gap-2 shrink-0">
+                                            <Icons.Settings /> Edit Mode: Click on map to add/edit stations.
                                         </div>
                                     )}
                                     <div 
+                                        className={`relative flex-1 bg-white rounded-[1.5rem] md:rounded-[2rem] border-[8px] md:border-[12px] border-white shadow-2xl overflow-hidden ${isAdmin && adminMode === 'edit' ? 'cursor-crosshair' : ''}`}
                                         ref={mapContainerRef}
-                                        onClick={handleMapClick}
-                                        className={`relative bg-white rounded-[2rem] md:rounded-[4rem] shadow-2xl overflow-y-auto md:overflow-hidden border-[8px] md:border-[16px] border-white ring-1 ring-slate-200 animate-in zoom-in-95 w-full md:w-full md:h-[90%] md:flex md:items-center md:justify-center ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
+                                        onClick={(e) => {
+                                            if (!isAdmin || adminMode !== 'edit') return;
+                                            const rect = mapContainerRef.current.getBoundingClientRect();
+                                            const x = ((e.clientX - rect.left) / rect.width) * 100;
+                                            const y = ((e.clientY - rect.top) / rect.height) * 100;
+                                            setPointModal({ x, y, name: '' });
+                                        }}
                                     >
-                                        <img src={LAYOUT_IMAGE} className="w-full h-full object-contain block pointer-events-none" />
+                                        <img src={ASSETS.LAYOUT} className="w-full h-full object-contain pointer-events-none" alt="Map Layout" />
                                         {points.map(pt => {
-                                            const pendingStatus = pendingEvaluations[pt.id];
-                                            const displayStatus = (isAdmin && adminMode === 'dashboard') ? currentStatusMap[pt.id] : pendingStatus;
-                                            const isPending = !!pendingStatus;
-                                            
+                                            const pending = pendingEvaluations[pt.id];
+                                            const isEvaluated = !!pending;
                                             return (
-                                                <div key={pt.id} className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10" style={{ top: `${pt.y}%`, left: `${pt.x}%` }}>
-                                                    <button 
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            if (isAdmin && adminMode === 'map_edit') {
-                                                                setEditPointName(pt.name);
-                                                                setShowPointModal(pt);
-                                                            } else {
-                                                                setActiveEval(pt);
-                                                            }
-                                                        }} 
-                                                        className={`group flex flex-col items-center gap-2 transition-all duration-300 ${isPending ? 'scale-110' : 'active:scale-90'}`}
-                                                    >
-                                                        <div className={`button-group-border p-1 md:p-1.5 flex items-center gap-1 shadow-2xl transition-all ${isPending ? 'ring-4 ring-indigo-400 ring-offset-2' : 'opacity-80 group-hover:opacity-100'}`}>
-                                                            <SmileyFace type="sad" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'sad' ? 'bg-red-500 text-white' : 'text-white/20'}`} />
-                                                            <SmileyFace type="neutral" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'neutral' ? 'bg-yellow-500 text-white' : 'text-white/20'}`} />
-                                                            <SmileyFace type="happy" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'happy' ? 'bg-green-500 text-white' : 'text-white/20'}`} />
+                                                <div key={pt.id} className="absolute -translate-x-1/2 -translate-y-1/2 z-20" style={{top: `${pt.y}%`, left: `${pt.x}%`}}>
+                                                    <button onClick={(e) => { e.stopPropagation(); if (isAdmin && adminMode === 'edit') setPointModal(pt); else setActiveEval(pt); }} className={`group flex flex-col items-center gap-1 transition-all ${isEvaluated ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}>
+                                                        <div className={`button-group-border p-1 flex gap-1 shadow-lg transition-all ${isEvaluated ? 'ring-2 md:ring-4 ring-indigo-400 ring-offset-1 md:ring-offset-2' : 'opacity-80 group-hover:opacity-100'}`}>
+                                                            <SmileyFace type="sad" className={`w-5 h-5 md:w-8 md:h-8 transition-all ${pending === 'sad' ? 'text-red-500' : 'text-slate-200'}`} />
+                                                            <SmileyFace type="neutral" className={`w-5 h-5 md:w-8 md:h-8 transition-all ${pending === 'neutral' ? 'text-amber-500' : 'text-slate-200'}`} />
+                                                            <SmileyFace type="happy" className={`w-5 h-5 md:w-8 md:h-8 transition-all ${pending === 'happy' ? 'text-emerald-500' : 'text-slate-200'}`} />
                                                         </div>
-                                                        <div className={`label-gradient text-white text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest shadow-xl transition-all ${isPending ? 'opacity-100' : 'opacity-60'}`}>
-                                                            {pt.name}
-                                                        </div>
+                                                        <span className="label-gradient text-[7px] md:text-[10px] text-white font-black px-1.5 md:px-2 py-0.5 md:py-1 rounded shadow-md uppercase truncate max-w-[60px] md:max-w-[80px]">{pt.name}</span>
                                                     </button>
                                                 </div>
                                             );
@@ -581,94 +430,69 @@
                         </div>
                     </main>
 
-                    {/* SEND BUTTON */}
                     {!isAdmin && Object.keys(pendingEvaluations).length > 0 && (
-                        <div className="fixed bottom-10 right-6 md:right-10 z-[100] animate-in slide-in-from-bottom-10">
-                            <button onClick={submitAll} disabled={isSubmitting} className="group relative w-20 h-20 md:w-28 md:h-28 bg-indigo-600 text-white rounded-full shadow-[0_20px_50px_rgba(79,70,229,0.5)] flex flex-col items-center justify-center hover:bg-indigo-700 hover:scale-110 transition-all border-4 border-white">
-                                {isSubmitting ? (
-                                    <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                                ) : (
-                                    <>
-                                        <Icons.Send />
-                                        <span className="text-[10px] font-black uppercase mt-1">Send</span>
-                                    </>
-                                )}
-                                <div className="absolute -top-2 -right-2 w-10 h-10 bg-red-500 text-white text-lg font-black rounded-full border-4 border-white flex items-center justify-center shadow-lg">
-                                    {Object.keys(pendingEvaluations).length}
-                                </div>
+                        <div className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-40 animate-in slide-in-from-bottom-10">
+                            <button onClick={submitEvaluations} disabled={isSubmitting} className="w-20 h-20 md:w-32 md:h-32 bg-indigo-600 rounded-full text-white shadow-2xl flex flex-col items-center justify-center border-4 border-white hover:scale-110 active:scale-95 transition-all">
+                                {isSubmitting ? <div className="w-6 h-6 md:w-8 md:h-8 border-4 border-white border-t-transparent rounded-full animate-spin" /> : <Icons.Send />}
+                                <span className="text-[8px] md:text-[10px] font-black uppercase mt-1">Submit</span>
+                                <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-8 h-8 md:w-10 md:h-10 bg-red-500 rounded-full flex items-center justify-center font-black border-2 md:border-4 border-white text-xs">{Object.keys(pendingEvaluations).length}</div>
                             </button>
                         </div>
                     )}
 
-                    {/* SUCCESS PULSE OVERLAY */}
                     {showSuccessPulse && (
-                        <div className="fixed inset-0 z-[500] flex items-center justify-center pointer-events-none">
-                            <div className="animate-success-pulse">
-                                <Icons.GradientHeart size={250} />
-                            </div>
+                        <div className="fixed inset-0 z-[100] bg-white/50 backdrop-blur-sm flex items-center justify-center pointer-events-none">
+                            <div className="animate-success-pulse text-indigo-600"><Icons.Heart size={200} fill="currentColor" /></div>
                         </div>
                     )}
 
-                    {/* EVALUATION MODAL - NOW IN ENGLISH */}
                     {activeEval && (
-                        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/90 backdrop-blur-xl p-4 animate-in fade-in duration-300">
-                            <div className="bg-white rounded-[3rem] p-8 md:p-16 w-full max-w-5xl shadow-2xl flex flex-col items-center">
-                                <header className="mb-10 text-center">
-                                    <h3 className="text-4xl md:text-7xl font-black text-slate-900 mb-4 uppercase tracking-tighter leading-none">{activeEval.name}</h3>
-                                    <p className="text-slate-400 font-medium text-lg md:text-2xl uppercase">WHAT IS THE STATUS OF THIS STATION?</p>
-                                </header>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-10 w-full max-w-4xl">
-                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'sad'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-red-500 hover:bg-red-50 transition-all active:scale-95 shadow-xl">
-                                        <SmileyFace type="sad" className="w-16 h-16 md:w-40 md:h-40 text-red-500" />
-                                        <span className="font-black text-xl md:text-2xl uppercase text-red-600">CRITICAL</span>
-                                    </button>
-                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'neutral'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-yellow-500 hover:bg-yellow-50 transition-all active:scale-95 shadow-xl">
-                                        <SmileyFace type="neutral" className="w-16 h-16 md:w-40 md:h-40 text-yellow-500" />
-                                        <span className="font-black text-xl uppercase text-yellow-600 text-center">ACCEPTABLE</span>
-                                    </button>
-                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'happy'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-green-500 hover:bg-green-50 transition-all active:scale-95 shadow-xl">
-                                        <SmileyFace type="happy" className="w-16 h-16 md:w-40 md:h-40 text-green-500" />
-                                        <span className="font-black text-xl md:text-2xl uppercase text-green-600">EXCELLENT</span>
-                                    </button>
+                        <div className="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
+                            <div className="bg-white w-full max-w-4xl rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-16 flex flex-col items-center animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+                                <h3 className="text-3xl md:text-6xl font-black uppercase text-center mb-2 md:mb-4 tracking-tighter">{activeEval.name}</h3>
+                                <p className="text-slate-400 font-bold uppercase mb-8 md:mb-12 text-xs md:text-base">Station Condition Assessment</p>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full mb-8 md:mb-10">
+                                    {[{ id: 'sad', label: 'Critical', color: 'red' }, { id: 'neutral', label: 'Acceptable', color: 'amber' }, { id: 'happy', label: 'Excellent', color: 'emerald' }].map(opt => (
+                                        <button key={opt.id} onClick={() => { setPendingEvaluations(p => ({...p, [activeEval.id]: opt.id})); setActiveEval(null); }} className={`flex flex-row md:flex-col items-center justify-center gap-4 md:gap-6 p-6 md:p-10 rounded-[2rem] bg-slate-50 border-4 border-transparent hover:border-${opt.color}-500 transition-all active:scale-95 group shadow-sm`}>
+                                            <SmileyFace type={opt.id} className={`w-12 h-12 md:w-40 md:h-40 text-${opt.color}-500`} />
+                                            <span className={`font-black text-lg md:text-2xl uppercase text-${opt.color}-600`}>{opt.label}</span>
+                                        </button>
+                                    ))}
                                 </div>
-                                <button onClick={() => setActiveEval(null)} className="py-6 px-12 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-xl hover:bg-slate-200 transition-all">CANCEL</button>
+                                <button onClick={() => setActiveEval(null)} className="px-10 py-3 md:px-12 md:py-4 bg-slate-100 rounded-2xl font-black uppercase text-slate-400 text-xs md:text-base">Cancel</button>
                             </div>
                         </div>
                     )}
 
-                    {/* ADMIN EDIT POINT MODAL */}
-                    {showPointModal && (
-                        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-6 animate-in zoom-in-95">
-                            <div className="bg-white rounded-[3rem] p-10 w-full max-w-lg shadow-2xl relative">
-                                <button onClick={() => setShowPointModal(null)} className="absolute top-8 right-8 text-slate-400 hover:text-slate-600"><Icons.X /></button>
-                                <h3 className="text-2xl font-black mb-8 uppercase text-indigo-600">{showPointModal.id ? 'Edit Station' : 'New Station'}</h3>
+                    {loginModal.open && (
+                        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+                            <form onSubmit={(e) => { e.preventDefault(); if (loginModal.user.toUpperCase() === 'GESTÃO' && loginModal.pass === '789') { setIsAdmin(true); setLoginModal(m => ({...m, open: false})); } }} className="bg-white p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] w-full max-w-md shadow-2xl relative">
+                                <button type="button" onClick={() => setLoginModal(m => ({...m, open: false}))} className="absolute top-6 right-6 text-slate-400"><Icons.X /></button>
+                                <h3 className="text-xl md:text-2xl font-black text-center mb-6 md:mb-8 uppercase">Acesso Gestão</h3>
+                                <div className="space-y-4">
+                                    <input type="text" placeholder="Username" className="w-full bg-slate-50 p-4 md:p-6 rounded-2xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none" value={loginModal.user} onChange={e => setLoginModal({...loginModal, user: e.target.value})} />
+                                    <input type="password" placeholder="Password" className="w-full bg-slate-50 p-4 md:p-6 rounded-2xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none" value={loginModal.pass} onChange={e => setLoginModal({...loginModal, pass: e.target.value})} />
+                                    <button className="w-full py-4 md:py-6 bg-indigo-600 text-white font-black uppercase rounded-2xl shadow-xl">Login</button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {pointModal && (
+                        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+                            <div className="bg-white p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] w-full max-w-md shadow-2xl relative">
+                                <button onClick={() => setPointModal(null)} className="absolute top-6 right-6 text-slate-400"><Icons.X /></button>
+                                <h3 className="text-xl md:text-2xl font-black mb-6 md:mb-8 uppercase text-indigo-600">{pointModal.id ? 'Edit Station' : 'Add Station'}</h3>
                                 <div className="space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Station Name</label>
-                                        <input autoFocus type="text" placeholder="e.g. Laser Stock" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold border-4 border-transparent focus:border-indigo-500 outline-none" value={editPointName} onChange={e => setEditPointName(e.target.value)} />
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Station Label</label>
+                                        <input autoFocus type="text" placeholder="e.g. Laser Loading" className="w-full bg-slate-50 p-4 md:p-6 rounded-2xl font-bold text-lg md:text-xl outline-none" value={pointModal.name} onChange={e => setPointModal({...pointModal, name: e.target.value})} />
                                     </div>
                                     <div className="flex gap-4">
-                                        <button onClick={savePoint} className="flex-1 bg-indigo-600 text-white font-black py-6 rounded-2xl text-lg uppercase shadow-xl hover:bg-indigo-700 transition-all">Save</button>
-                                        {showPointModal.id && (
-                                            <button onClick={deletePoint} className="bg-red-50 p-6 rounded-2xl text-red-500 hover:bg-red-100 transition-all" title="Delete"><Icons.Trash /></button>
-                                        )}
+                                        <button onClick={() => togglePoint(pointModal)} className="flex-1 py-4 md:py-6 bg-indigo-600 text-white font-black uppercase rounded-2xl shadow-xl">Save</button>
+                                        {pointModal.id && <button onClick={() => removePoint(pointModal.id)} className="px-6 md:px-8 py-4 md:py-6 bg-red-50 text-red-500 rounded-2xl hover:bg-red-100 transition-all"><Icons.Trash /></button>}
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* MANAGEMENT LOGIN */}
-                    {showLoginModal && (
-                        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-6">
-                            <div className="bg-white rounded-[2.5rem] p-10 md:p-16 w-full max-w-xl shadow-2xl relative">
-                                <button onClick={() => setShowLoginModal(false)} className="absolute top-8 right-8 text-slate-400"><Icons.X /></button>
-                                <h3 className="text-3xl font-black mb-10 uppercase text-center">Management Access</h3>
-                                <form onSubmit={(e) => { e.preventDefault(); if(loginForm.user.toUpperCase()==='GESTÃO'&&loginForm.pass==='789'){setIsAdmin(true); setShowLoginModal(false); } }} className="space-y-6">
-                                    <input type="text" placeholder="Username" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold outline-none border-4 border-transparent focus:border-indigo-500 shadow-inner" onChange={e => setLoginForm({...loginForm, user: e.target.value})} />
-                                    <input type="password" placeholder="Password" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold outline-none border-4 border-transparent focus:border-indigo-500 shadow-inner" onChange={e => setLoginForm({...loginForm, pass: e.target.value})} />
-                                    <button type="submit" className="w-full bg-indigo-600 text-white font-black py-6 rounded-2xl text-lg uppercase shadow-xl hover:bg-indigo-700 transition-all">Login</button>
-                                </form>
                             </div>
                         </div>
                     )}
