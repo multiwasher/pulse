@@ -213,7 +213,8 @@
             const [isSubmitting, setIsSubmitting] = useState(false);
             const [isReady, setIsReady] = useState(false);
             const [showSuccessPulse, setShowSuccessPulse] = useState(false);            const [showLayoutGif, setShowLayoutGif] = useState(false);
-            const [gifFadingOut, setGifFadingOut] = useState(false);            
+            const [gifFadingOut, setGifFadingOut] = useState(false);
+            const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);            
             // Edit Point States
             const [showPointModal, setShowPointModal] = useState(null); 
             const [editPointName, setEditPointName] = useState("");
@@ -222,6 +223,18 @@
             useEffect(() => {
                 const checkReady = setInterval(() => { if (window.FB) { setIsReady(true); clearInterval(checkReady); } }, 50);
                 return () => clearInterval(checkReady);
+            }, []);
+
+            useEffect(() => {
+                const handleOrientationChange = () => {
+                    setIsLandscape(window.innerWidth > window.innerHeight);
+                };
+                window.addEventListener('orientationchange', handleOrientationChange);
+                window.addEventListener('resize', handleOrientationChange);
+                return () => {
+                    window.removeEventListener('orientationchange', handleOrientationChange);
+                    window.removeEventListener('resize', handleOrientationChange);
+                };
             }, []);
 
             useEffect(() => {
@@ -388,7 +401,7 @@
 
             if (view === 'splash') {
                 return (
-                    <div className="relative min-h-screen overflow-hidden splash-screen-landscape">
+                    <div className={`relative min-h-screen overflow-hidden ${isLandscape && window.innerWidth < 768 ? 'overflow-y-auto' : ''}`}>
                         {/* Loading GIF overlay on mobile */}
                         {showLayoutGif && (
                             <div className="fixed inset-0 z-[300] flex items-center justify-center bg-white pointer-events-none animate-in fade-in duration-300">
