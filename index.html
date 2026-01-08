@@ -312,15 +312,14 @@
 
 <body>
 
-    <div id="install-banner" class="hidden p-4 bg-blue-600 text-white flex justify-between items-center rounded-lg shadow-lg m-4">
-        <div>
-            <p class="font-bold">FactoryPulse no seu Telemóvel</p>
-            <p class="text-sm text-blue-100">Instale para acesso rápido e offline.</p>
-        </div>
-        <button id="install-button" class="bg-white text-blue-600 px-4 py-2 rounded-md font-bold hover:bg-blue-50 transition">
-            Instalar
+        <button id="pwa-install-btn" class="hidden fixed bottom-10 left-6 z-[100] flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-full shadow-[0_10px_30px_rgba(37,99,235,0.4)] hover:bg-blue-700 hover:scale-105 transition-all border-2 border-white animate-in slide-in-from-left-10">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span class="font-black uppercase text-xs tracking-wider">Instalar App</span>
         </button>
-    </div>
 
     <div id="root"></div>
 
@@ -1343,45 +1342,33 @@
       }
     </script>
 
-     <script>
-         let deferredPrompt;
-const installBanner = document.getElementById('install-banner');
-const installButton = document.getElementById('install-button');
+    <script>
+    let deferredPrompt;
+    const installBtn = document.getElementById('pwa-install-btn');
 
-// 1. Escuta o evento que o browser dispara quando a App é "instalável"
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Impede o Chrome de mostrar o banner automático (nós vamos mostrar o nosso)
-  e.preventDefault();
-  // Guarda o evento para ser usado mais tarde
-  deferredPrompt = e;
-  // Mostra o nosso banner/botão personalizado
-  installBanner.classList.remove('hidden');
-});
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Impede o browser de mostrar o prompt automático
+        e.preventDefault();
+        deferredPrompt = e;
+        // Mostra o nosso botão flutuante
+        installBtn.classList.remove('hidden');
+    });
 
-// 2. Lógica do clique no botão
-installButton.addEventListener('click', async () => {
-  if (deferredPrompt) {
-    // Mostra o prompt oficial do browser
-    deferredPrompt.prompt();
-    
-    // Espera pela escolha do utilizador
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`Utilizador escolheu: ${outcome}`);
-    
-    // Limpa o prompt para não ser usado novamente
-    deferredPrompt = null;
-    
-    // Esconde o banner após a escolha
-    installBanner.classList.add('hidden');
-  }
-});
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`Utilizador escolheu: ${outcome}`);
+            deferredPrompt = null;
+            installBtn.classList.add('hidden');
+        }
+    });
 
-// 3. Esconder o banner se a app já for instalada com sucesso
-window.addEventListener('appinstalled', () => {
-  console.log('FactoryPulse instalada com sucesso!');
-  installBanner.classList.add('hidden');
-});
-     </script>
+    window.addEventListener('appinstalled', () => {
+        console.log('App instalada!');
+        installBtn.classList.add('hidden');
+    });
+</script>
    
     
 </body>
