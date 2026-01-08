@@ -1,22 +1,39 @@
 {
+  "id": "/pulse/index.html",
   "short_name": "FactoryPulse",
   "name": "Factory Station Maintenance",
   "icons": [
     {
-      "src": "https://static.wixstatic.com/media/a6967f_874354ad69c5461eafd229ab23540233~mv2.png/v1/fill/w_192,h_192,al_c,q_85/icon.png",
+      "src": "https://static.wixstatic.com/media/a6967f_95db0dbb18554c0299efd61c7e081848~mv2.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://static.wixstatic.com/media/a6967f_874354ad69c5461eafd229ab23540233~mv2.png/v1/fill/w_512,h_512,al_c,q_85/icon.png",
+      "src": "https://static.wixstatic.com/media/a6967f_95db0dbb18554c0299efd61c7e081848~mv2.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "theme_color": "#1b4794",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "screenshots": [
+    {
+      "src": "https://static.wixstatic.com/media/a6967f_c9d5a191246b4dd3818f6ab57849dee9~mv2.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Vista móvel da FactoryPulse"
+    },
+    {
+      "src": "https://static.wixstatic.com/media/a6967f_1641eee7681c4afd8e45016286e81ef1~mv2.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Vista Desktop da FactoryPulse"
+    }
+  ]
 }
