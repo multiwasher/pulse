@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Factory Pulse">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="manifest" href="manifest.json">
     <title>Factory Station Maintenance</title>
     
     <!-- Tailwind CSS -->
@@ -44,6 +50,28 @@
                 onAuthStateChanged, updateDoc 
             } 
         };
+
+        // Request fullscreen on mobile devices and tablets
+        const requestFullscreenOnMobile = () => {
+            if (/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini|Tablet|Silk|Kindle/i.test(navigator.userAgent) || 
+                (navigator.maxTouchPoints && navigator.maxTouchPoints > 2)) {
+                const doc = document.documentElement;
+                if (doc.requestFullscreen) {
+                    doc.requestFullscreen().catch(err => console.log('Fullscreen request denied:', err));
+                } else if (doc.webkitRequestFullscreen) {
+                    doc.webkitRequestFullscreen();
+                } else if (doc.mozRequestFullScreen) {
+                    doc.mozRequestFullScreen();
+                } else if (doc.msRequestFullscreen) {
+                    doc.msRequestFullscreen();
+                }
+            }
+        };
+
+        // Try to request fullscreen on various events
+        setTimeout(requestFullscreenOnMobile, 500);
+        document.addEventListener('DOMContentLoaded', requestFullscreenOnMobile);
+        document.addEventListener('touchstart', requestFullscreenOnMobile, { once: true });
     </script>
 
     <!-- Babel for JSX -->
