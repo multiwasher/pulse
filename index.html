@@ -323,7 +323,9 @@
 
     <div id="root"></div>
 
-
+<div id="offline-status" class="hidden fixed top-0 left-0 w-full bg-red-600 text-white text-center py-2 z-[10000] font-bold text-xs md:text-sm shadow-md animate-pulse">
+    ⚠️ Sem ligação à internet. A usar dados em cache.
+</div>
 
     <script type="text/babel">
 
@@ -1342,15 +1344,15 @@
       }
     </script>
 
-    <script>
+<script>
     let deferredPrompt;
     const installBtn = document.getElementById('pwa-install-btn');
 
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Impede o browser de mostrar o prompt automático
+        // Impede o prompt automático do browser
         e.preventDefault();
         deferredPrompt = e;
-        // Mostra o nosso botão flutuante
+        // Mostra o botão flutuante apenas se a app for instalável
         installBtn.classList.remove('hidden');
     });
 
@@ -1365,11 +1367,33 @@
     });
 
     window.addEventListener('appinstalled', () => {
-        console.log('App instalada!');
+        console.log('App instalada com sucesso!');
         installBtn.classList.add('hidden');
     });
 </script>
    
+<script>
+    // Selecionar o elemento de status
+const offlineStatus = document.getElementById('offline-status');
+
+// Função para atualizar o estado visual
+function updateOnlineStatus() {
+    if (navigator.onLine) {
+        offlineStatus.classList.add('hidden');
+        console.log("De volta ao ativo!");
+    } else {
+        offlineStatus.classList.remove('hidden');
+        console.log("Sinal perdido...");
+    }
+}
+
+// Escutar eventos de rede do browser
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// Verificar o estado assim que a app abre
+updateOnlineStatus();
+</script>
     
 </body>
 
