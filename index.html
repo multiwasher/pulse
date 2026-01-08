@@ -222,25 +222,29 @@
 
 
 
-        /* Mobile: Allow scrollbars, no scaling */
+        /* Mobile: Forçar scroll vertical e remover a trava de altura fixa */
 
         @media (max-width: 768px) {
 
             body {
 
-                overflow-x: auto;
+                overflow-x: hidden;
 
-                overflow-y: auto;
+                overflow-y: auto !important;
 
-                width: 100%;
+                height: auto !important;
+
+                min-height: 100vh;
 
             }
 
             #root { 
 
+                height: auto !important;
+
                 min-height: 100vh;
 
-                width: 100%;
+                overflow-y: visible;
 
             }
 
@@ -854,7 +858,7 @@
 
             return (
 
-                <div className={`min-h-screen md:h-screen bg-white font-sans text-slate-900 select-none flex flex-col overflow-hidden ${isLandscape && window.innerWidth < 768 ? 'md:overflow-auto overflow-y-auto' : 'md:overflow-auto'}`}>
+                <div className={`min-h-screen flex flex-col bg-white font-sans text-slate-900 select-none ${isLandscape && window.innerWidth < 768 ? '' : 'h-screen md:overflow-hidden'} overflow-y-auto`}>
 
                     {/* NAVBAR */}
 
