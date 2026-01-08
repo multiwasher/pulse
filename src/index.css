@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes heartbeat { 
+    0% { transform: scale(1); opacity: 0.6; } 
+    14% { transform: scale(1.15); opacity: 1; } 
+    28% { transform: scale(1); opacity: 0.6; } 
+    42% { transform: scale(1.15); opacity: 1; } 
+    56% { transform: scale(1); opacity: 0.6; }
+    85% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1); opacity: 0.6; }
+}
+
+@keyframes heart-glow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(81, 184, 234, 0.6)) drop-shadow(0 0 20px rgba(81, 184, 234, 0.3)); }
+    14%, 42% { filter: drop-shadow(0 0 20px rgba(81, 184, 234, 0.9)) drop-shadow(0 0 35px rgba(81, 184, 234, 0.5)); }
+    28%, 56% { filter: drop-shadow(0 0 10px rgba(81, 184, 234, 0.6)) drop-shadow(0 0 20px rgba(81, 184, 234, 0.3)); }
+}
+
+.animate-heartbeat { 
+    animation: heartbeat 2.5s ease-in-out infinite, heart-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-success {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+.animate-success-pulse { animation: pulse-success 1.5s ease-out forwards; }
+
+@keyframes fade-out {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+.animate-out.fade-out.duration-500 { animation: fade-out 0.5s ease-out forwards; }
+.gif-fade-out { animation: fade-out 1.5s ease-out forwards; }
+.gif-no-loop { animation: play-once 3.5s steps(1) 1 forwards; }
+
+@keyframes play-once {
+    0% { opacity: 1; }
+    99% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+.label-gradient {
+    border-radius: 0.5rem;
+    background: linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%);
+}
+
+.button-group-border {
+    background: linear-gradient(#000, #000) padding-box, 
+                linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%) border-box;
+    border: 2px solid transparent;
+    border-radius: 9999px;
+}
+
+body {
+    margin: 0; 
+    padding: 0;
+    background-color: #ffffff;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+        overflow-y: auto !important;
+        height: auto !important;
+        min-height: 100vh;
+    }
+    #root { 
+        height: auto !important;
+        min-height: 100vh;
+        overflow-y: visible;
+    }
+}
+
+@media (min-width: 769px) {
+    body {
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+    }
+    #root { 
+        width: 100vw;
+        height: 100vh;
+        overflow: auto;
+    }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .splash-screen-landscape {
+        overflow-y: auto !important;
+        min-height: auto !important;
+        height: 100vh;
+    }
+}
