@@ -10,6 +10,8 @@
 
     <title>Factory Station Maintenance</title>
 
+    <link rel="manifest" href="manifest.json">
+
     
 
     <!-- Tailwind CSS -->
@@ -1306,6 +1308,16 @@
 
         root.render(<App />);
 
+    </script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker registado!'))
+            .catch(err => console.log('Erro ao registar SW:', err));
+        });
+      }
     </script>
 
 </body>
