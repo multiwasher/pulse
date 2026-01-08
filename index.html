@@ -20,7 +20,7 @@
 
     <link rel="manifest" href="manifest.json">
 
-    
+
 
     <!-- Tailwind CSS -->
 
@@ -311,6 +311,16 @@
 </head>
 
 <body>
+
+    <div id="install-banner" class="hidden p-4 bg-blue-600 text-white flex justify-between items-center rounded-lg shadow-lg m-4">
+        <div>
+            <p class="font-bold">FactoryPulse no seu Telemóvel</p>
+            <p class="text-sm text-blue-100">Instale para acesso rápido e offline.</p>
+        </div>
+        <button id="install-button" class="bg-white text-blue-600 px-4 py-2 rounded-md font-bold hover:bg-blue-50 transition">
+            Instalar
+        </button>
+    </div>
 
     <div id="root"></div>
 
@@ -1333,6 +1343,47 @@
       }
     </script>
 
+     <script>
+         let deferredPrompt;
+const installBanner = document.getElementById('install-banner');
+const installButton = document.getElementById('install-button');
+
+// 1. Escuta o evento que o browser dispara quando a App é "instalável"
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Impede o Chrome de mostrar o banner automático (nós vamos mostrar o nosso)
+  e.preventDefault();
+  // Guarda o evento para ser usado mais tarde
+  deferredPrompt = e;
+  // Mostra o nosso banner/botão personalizado
+  installBanner.classList.remove('hidden');
+});
+
+// 2. Lógica do clique no botão
+installButton.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    // Mostra o prompt oficial do browser
+    deferredPrompt.prompt();
+    
+    // Espera pela escolha do utilizador
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`Utilizador escolheu: ${outcome}`);
+    
+    // Limpa o prompt para não ser usado novamente
+    deferredPrompt = null;
+    
+    // Esconde o banner após a escolha
+    installBanner.classList.add('hidden');
+  }
+});
+
+// 3. Esconder o banner se a app já for instalada com sucesso
+window.addEventListener('appinstalled', () => {
+  console.log('FactoryPulse instalada com sucesso!');
+  installBanner.classList.add('hidden');
+});
+     </script>
+   
+    
 </body>
 
 </html>
