@@ -136,6 +136,13 @@
                 overflow: auto;
             }
         }
+
+        /* Mobile landscape: Allow scrolling */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .splash-screen-landscape {
+                overflow-y: auto !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -379,7 +386,7 @@
 
             if (view === 'splash') {
                 return (
-                    <div className="relative min-h-screen">
+                    <div className="relative min-h-screen overflow-hidden splash-screen-landscape">
                         {/* Loading GIF overlay on mobile */}
                         {showLayoutGif && (
                             <div className="fixed inset-0 z-[300] flex items-center justify-center bg-white pointer-events-none animate-in fade-in duration-300">
