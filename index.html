@@ -1,17 +1,1343 @@
 <!DOCTYPE html>
-<html lang="pt">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="Manutenção de Estações de Fábrica - Pulse System">
-    <meta name="mobile-web-app-capable" content="yes">
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="mobile-web-app-capable" content="yes">
+
     <link rel="apple-touch-icon" href="https://static.wixstatic.com/media/a6967f_874354ad69c5461eafd229ab23540233~mv2.png">
-    <link rel="manifest" href="/manifest.json">
-    <title>Factory Pulse - Station Maintenance</title>
-  </head>
-  <body>
+
+    <title>Factory Station Maintenance</title>
+
+    <link rel="manifest" href="manifest.json">
+
+    
+
+    <!-- Tailwind CSS -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    
+
+    <!-- React & ReactDOM -->
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    
+
+    <!-- Firebase SDK (Modular) -->
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+
+        // --- SUA CONFIGURAÇÃO REAL AQUI ---
+
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyDX_fcMzzOXTaBh2VszUh-j_kmApR0fiv8",
+
+            authDomain: "manutencao-fabrica.firebaseapp.com",
+
+            projectId: "manutencao-fabrica",
+
+            storageBucket: "manutencao-fabrica.firebasestorage.app",
+
+            messagingSenderId: "322227932590",
+
+            appId: "1:322227932590:web:2459b650fb9ca7c3b14c3f"
+
+        };
+
+
+
+        // Usaremos o projectId como ID do app para organizar os dados no Firestore
+
+        const appId = "manutencao-fabrica"; 
+
+        const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+
+
+        const app = initializeApp(firebaseConfig);
+
+        const auth = getAuth(app);
+
+        const db = getFirestore(app);
+
+
+
+        window.FB = { 
+
+            auth, db, appId, initialToken, 
+
+            methods: { 
+
+                doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, deleteDoc, 
+
+                writeBatch, serverTimestamp, signInWithCustomToken, signInAnonymously, 
+
+                onAuthStateChanged, updateDoc 
+
+            } 
+
+        };
+
+    </script>
+
+
+
+    <!-- Babel for JSX -->
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+
+
+    <style>
+
+        @keyframes heartbeat { 
+
+            0% { transform: scale(1); opacity: 0.6; } 
+
+            14% { transform: scale(1.15); opacity: 1; } 
+
+            28% { transform: scale(1); opacity: 0.6; } 
+
+            42% { transform: scale(1.15); opacity: 1; } 
+
+            56% { transform: scale(1); opacity: 0.6; }
+
+            85% { transform: scale(1); opacity: 0.6; }
+
+            100% { transform: scale(1); opacity: 0.6; }
+
+        }
+
+        
+
+        @keyframes heart-glow {
+
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(81, 184, 234, 0.6)) drop-shadow(0 0 20px rgba(81, 184, 234, 0.3)); }
+
+            14%, 42% { filter: drop-shadow(0 0 20px rgba(81, 184, 234, 0.9)) drop-shadow(0 0 35px rgba(81, 184, 234, 0.5)); }
+
+            28%, 56% { filter: drop-shadow(0 0 10px rgba(81, 184, 234, 0.6)) drop-shadow(0 0 20px rgba(81, 184, 234, 0.3)); }
+
+        }
+
+        
+
+        .animate-heartbeat { 
+
+            animation: heartbeat 2.5s ease-in-out infinite, heart-glow 2.5s ease-in-out infinite;
+
+        }
+
+
+
+        @keyframes pulse-success {
+
+            0% { transform: scale(0.5); opacity: 0; }
+
+            50% { transform: scale(1.2); opacity: 1; }
+
+            100% { transform: scale(1.5); opacity: 0; }
+
+        }
+
+        .animate-success-pulse { animation: pulse-success 1.5s ease-out forwards; }
+
+
+
+        @keyframes fade-out {
+
+            0% { opacity: 1; }
+
+            100% { opacity: 0; }
+
+        }
+
+        .animate-out.fade-out.duration-500 { animation: fade-out 0.5s ease-out forwards; }
+
+        .gif-fade-out { animation: fade-out 1.5s ease-out forwards; }
+
+        .gif-no-loop { animation: play-once 3.5s steps(1) 1 forwards; }
+
+        
+
+        @keyframes play-once {
+
+            0% { opacity: 1; }
+
+            99% { opacity: 1; }
+
+            100% { opacity: 1; }
+
+        }
+
+
+
+        .label-gradient {
+
+            border-radius: 0.5rem;
+
+            background: linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%);
+
+        }
+
+
+
+        .button-group-border {
+
+            background: linear-gradient(#000, #000) padding-box, 
+
+                        linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%) border-box;
+
+            border: 2px solid transparent;
+
+            border-radius: 9999px;
+
+        }
+
+
+
+        body {
+
+            margin: 0; 
+
+            padding: 0;
+
+            background-color: #ffffff;
+
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+        }
+
+
+
+        /* Mobile: Forçar scroll vertical e remover a trava de altura fixa */
+
+        @media (max-width: 768px) {
+
+            body {
+
+                overflow-x: hidden;
+
+                overflow-y: auto !important;
+
+                height: auto !important;
+
+                min-height: 100vh;
+
+            }
+
+            #root { 
+
+                height: auto !important;
+
+                min-height: 100vh;
+
+                overflow-y: visible;
+
+            }
+
+        }
+
+
+
+        /* Tablet and Desktop: Fit to screen */
+
+        @media (min-width: 769px) {
+
+            body {
+
+                overflow: hidden;
+
+                width: 100vw;
+
+                height: 100vh;
+
+            }
+
+            #root { 
+
+                width: 100vw;
+
+                height: 100vh;
+
+                overflow: auto;
+
+            }
+
+        }
+
+
+
+        /* Mobile landscape: Allow scrolling */
+
+        @media (max-width: 768px) and (orientation: landscape) {
+
+            .splash-screen-landscape {
+
+                overflow-y: auto !important;
+
+                min-height: auto !important;
+
+                height: 100vh;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+
+
+    <script type="text/babel">
+
+        const { useState, useEffect, useCallback, useMemo, useRef } = React;
+
+
+
+       //const LAYOUT_IMAGE = "https://static.wixstatic.com/media/a6967f_aac24f82eec442c8992856c104e39d20~mv2.png";
+
+       //const SPLASH_IMAGE = "https://static.wixstatic.com/media/a6967f_1a75ce18a54d46f8994283c1798fbbfb~mv2.png";
+
+        //const CORNER_LOGO = "https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png";
+
+        //const ROUND_ICON = "https://static.wixstatic.com/media/a6967f_874354ad69c5461eafd229ab23540233~mv2.png";
+
+
+        // --- CONSTANTES OTIMIZADAS  ---
+        const LAYOUT_IMAGE = "https://static.wixstatic.com/media/a6967f_aac24f82eec442c8992856c104e39d20~mv2.png/v1/fill/w_1200,h_800,al_c,q_85/layout.webp";
+        const SPLASH_IMAGE = "https://static.wixstatic.com/media/a6967f_1a75ce18a54d46f8994283c1798fbbfb~mv2.png/v1/fill/w_600,h_600,al_c,q_85/splash.webp";
+        const CORNER_LOGO = "https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png/v1/fill/w_420,h_120,al_c,q_85/logo.webp";
+        const ROUND_ICON  = "https://static.wixstatic.com/media/a6967f_874354ad69c5461eafd229ab23540233~mv2.png/v1/fill/w_150,h_150,al_c,q_85/icon.webp";
+
+        const POINT_VALUES = { sad: 0, neutral: 1, happy: 3 };
+
+        const MAX_POINTS_PER_EVAL = 3;
+
+
+
+        const Icons = {
+
+            Heart: ({ size = 24, fill = "currentColor" }) => (
+
+                <svg width={size} height={size} viewBox="0 0 24 24" fill={fill}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+
+            ),
+
+            GradientHeart: ({ size = 120 }) => (
+
+                <svg width={size} height={size} viewBox="0 0 24 24">
+
+                    <defs>
+
+                        <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+
+                            <stop offset="0%" stopColor="rgb(81, 184, 234)" />
+
+                            <stop offset="100%" stopColor="rgb(27, 71, 148)" />
+
+                        </linearGradient>
+
+                    </defs>
+
+                    <path fill="url(#blueGradient)" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+
+                </svg>
+
+            ),
+
+            Map: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>,
+
+            Stats: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>,
+
+            Settings: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
+
+            Trash: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>,
+
+            Check: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>,
+
+            Send: () => <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>,
+
+            X: ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+
+        };
+
+
+
+        const SmileyFace = ({ type, className = "" }) => {
+
+            const BaseFace = ({ children }) => (
+
+                <svg viewBox="0 0 100 100" className={className} fill="none">
+
+                    <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="8"/>
+
+                    <circle cx="33" cy="40" r="6" fill="currentColor"/><circle cx="67" cy="40" r="6" fill="currentColor"/>
+
+                    {children}
+
+                </svg>
+
+            );
+
+            if (type === 'happy') return <BaseFace><path d="M30 65C35 72 42 75 50 75C58 75 65 72 70 65" stroke="currentColor" strokeWidth="8" strokeLinecap="round"/></BaseFace>;
+
+            if (type === 'neutral') return <BaseFace><path d="M30 65H70" stroke="currentColor" strokeWidth="8" strokeLinecap="round"/></BaseFace>;
+
+            if (type === 'sad') return <BaseFace><path d="M30 75C35 68 42 65 50 65C58 65 65 68 70 75" stroke="currentColor" strokeWidth="8" strokeLinecap="round"/></BaseFace>;
+
+            return null;
+
+        };
+
+
+
+        function App() {
+
+            const [view, setView] = useState('splash');
+
+            const [user, setUser] = useState(null);
+
+            const [isAdmin, setIsAdmin] = useState(false);
+
+            const [adminMode, setAdminMode] = useState('dashboard'); // dashboard | map_edit
+
+            const [showLoginModal, setShowLoginModal] = useState(false);
+
+            const [points, setPoints] = useState([]);
+
+            const [historyLogs, setHistoryLogs] = useState([]);
+
+            const [pendingEvaluations, setPendingEvaluations] = useState({});
+
+            const [loginForm, setLoginForm] = useState({ user: '', pass: '' });
+
+            const [activeEval, setActiveEval] = useState(null);
+
+            const [isSubmitting, setIsSubmitting] = useState(false);
+
+            const [isReady, setIsReady] = useState(false);
+
+            const [showSuccessPulse, setShowSuccessPulse] = useState(false);            const [showLayoutGif, setShowLayoutGif] = useState(false);
+
+            const [gifFadingOut, setGifFadingOut] = useState(false);
+
+            const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);            
+
+            // Edit Point States
+
+            const [showPointModal, setShowPointModal] = useState(null); 
+
+            const [editPointName, setEditPointName] = useState("");
+
+            const mapContainerRef = useRef(null);
+
+
+
+            useEffect(() => {
+
+                const checkReady = setInterval(() => { if (window.FB) { setIsReady(true); clearInterval(checkReady); } }, 50);
+
+                return () => clearInterval(checkReady);
+
+            }, []);
+
+
+
+            useEffect(() => {
+
+                const handleOrientationChange = () => {
+
+                    setIsLandscape(window.innerWidth > window.innerHeight);
+
+                };
+
+                window.addEventListener('orientationchange', handleOrientationChange);
+
+                window.addEventListener('resize', handleOrientationChange);
+
+                return () => {
+
+                    window.removeEventListener('orientationchange', handleOrientationChange);
+
+                    window.removeEventListener('resize', handleOrientationChange);
+
+                };
+
+            }, []);
+
+
+
+            useEffect(() => {
+
+                if (!isReady) return;
+
+                const { auth, initialToken, methods } = window.FB;
+
+                const initAuth = async () => {
+
+                    try { if (initialToken) await methods.signInWithCustomToken(auth, initialToken); else await methods.signInAnonymously(auth); } catch (e) {}
+
+                };
+
+                initAuth();
+
+                const unsubscribe = methods.onAuthStateChanged(auth, setUser);
+
+                return () => unsubscribe();
+
+            }, [isReady]);
+
+
+
+            useEffect(() => {
+
+                if (!isReady || !user) return;
+
+                const { db, appId, methods } = window.FB;
+
+                const pointsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'config_points');
+
+                const logsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'history_logs');
+
+
+
+                const unsubPoints = methods.onSnapshot(pointsRef, (snap) => {
+
+                    setPoints(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+                });
+
+                const unsubLogs = methods.onSnapshot(logsRef, (snap) => {
+
+                    setHistoryLogs(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+                });
+
+                return () => { unsubPoints(); unsubLogs(); };
+
+            }, [isReady, user]);
+
+
+
+            const startNewRound = () => {
+
+                setPendingEvaluations({});
+
+                // Show loading GIF on mobile
+
+                if (window.innerWidth < 768) {
+
+                    setShowLayoutGif(true);
+
+                    setGifFadingOut(false);
+
+                    // Let GIF animate and pause for 3.5s, then fade out for 1.5s
+
+                    setTimeout(() => {
+
+                        setGifFadingOut(true);
+
+                    }, 3500);
+
+                    setTimeout(() => {
+
+                        setShowLayoutGif(false);
+
+                        setView('app');
+
+                    }, 5000);
+
+                } else {
+
+                    setView('app');
+
+                }
+
+            };
+
+
+
+            // Inactivity timer for app view - return to splash after 30s
+
+            useEffect(() => {
+
+                if (view !== 'app') return;
+
+                
+
+                let inactivityTimer;
+
+                const resetTimer = () => {
+
+                    clearTimeout(inactivityTimer);
+
+                    inactivityTimer = setTimeout(() => {
+
+                        setView('splash');
+
+                        setPendingEvaluations({});
+
+                    }, 30000); // 30 seconds
+
+                };
+
+
+
+                // Reset timer on user activity
+
+                const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'touchmove', 'click'];
+
+                events.forEach(event => document.addEventListener(event, resetTimer));
+
+                resetTimer(); // Start the initial timer
+
+
+
+                return () => {
+
+                    clearTimeout(inactivityTimer);
+
+                    events.forEach(event => document.removeEventListener(event, resetTimer));
+
+                };
+
+            }, [view]);
+
+
+
+            const currentStatusMap = useMemo(() => {
+
+                const status = {};
+
+                const sortedLogs = [...historyLogs].sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+
+                sortedLogs.forEach(log => { status[log.pointId] = log.status; });
+
+                return status;
+
+            }, [historyLogs]);
+
+
+
+            const stats = useMemo(() => {
+
+                const s = {}; 
+
+                points.forEach(p => s[p.id] = { name: p.name, score: 0, count: 0 });
+
+                historyLogs.forEach(log => { if (s[log.pointId]) { s[log.pointId].score += log.score; s[log.pointId].count++; } });
+
+                const list = Object.values(s).filter(x => x.count > 0).map(st => ({ ...st, performance: (st.score / (st.count * 3)) * 100 }));
+
+                const totalScore = list.reduce((a, b) => a + b.score, 0);
+
+                const totalPotential = list.reduce((a, b) => a + (b.count * 3), 0);
+
+                return { list: list.sort((a,b) => b.performance - a.performance), avg: totalPotential > 0 ? ((totalScore / totalPotential) * 100).toFixed(1) : "0", total: list.reduce((a, b) => a + b.count, 0) };
+
+            }, [points, historyLogs]);
+
+
+
+            const getPerformanceColor = (performance) => {
+
+                if (performance < 50) return { bg: 'bg-red-600', text: 'text-red-600', bar: 'bg-red-500' };
+
+                if (performance < 60) return { bg: 'bg-yellow-500', text: 'text-yellow-600', bar: 'bg-yellow-500' };
+
+                return { bg: 'bg-green-600', text: 'text-green-600', bar: 'bg-green-600' };
+
+            };
+
+
+
+            const submitAll = async () => {
+
+                if (!user || isSubmitting) return;
+
+                setIsSubmitting(true);
+
+                const { db, appId, methods } = window.FB;
+
+                const batch = methods.writeBatch(db);
+
+                const logsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'history_logs');
+
+                try {
+
+                    for (const [id, status] of Object.entries(pendingEvaluations)) {
+
+                        const newLogRef = methods.doc(logsRef);
+
+                        batch.set(newLogRef, { pointId: id, status, score: POINT_VALUES[status], timestamp: methods.serverTimestamp() });
+
+                    }
+
+                    await batch.commit();
+
+                    setPendingEvaluations({});
+
+                    setShowSuccessPulse(true);
+
+                    setTimeout(() => setShowSuccessPulse(false), 1500);
+
+                } catch (e) { 
+
+                    console.error(e); 
+
+                } finally { 
+
+                    setIsSubmitting(false); 
+
+                }
+
+            };
+
+
+
+            const handleMapClick = (e) => {
+
+                if (!isAdmin || adminMode !== 'map_edit') return;
+
+                const rect = mapContainerRef.current.getBoundingClientRect();
+
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+                setEditPointName("");
+
+                setShowPointModal({ x, y });
+
+            };
+
+
+
+            const savePoint = async () => {
+
+                if (!editPointName || !isReady || !window.FB) {
+
+                    console.warn('Save point conditions not met:', { editPointName, isReady, hasFB: !!window.FB });
+
+                    return;
+
+                }
+
+                try {
+
+                    const { db, appId, methods } = window.FB;
+
+                    if (!db || !appId || !methods) {
+
+                        console.error('Firebase not properly initialized', window.FB);
+
+                        return;
+
+                    }
+
+                    const pointsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'config_points');
+
+                    if (showPointModal.id) {
+
+                        const docRef = methods.doc(db, 'artifacts', appId, 'public', 'data', 'config_points', showPointModal.id);
+
+                        await methods.updateDoc(docRef, { name: editPointName });
+
+                    } else {
+
+                        await methods.addDoc(pointsRef, { name: editPointName, x: showPointModal.x, y: showPointModal.y });
+
+                    }
+
+                    setShowPointModal(null);
+
+                    setEditPointName("");
+
+                } catch (e) { 
+
+                    console.error('Error saving point:', e);
+
+                    alert('Failed to save station: ' + e.message);
+
+                }
+
+            };
+
+
+
+            const deletePoint = async () => {
+
+                if (!showPointModal?.id || !window.FB) return;
+
+                try {
+
+                    const { db, appId, methods } = window.FB;
+
+                    const docRef = methods.doc(db, 'artifacts', appId, 'public', 'data', 'config_points', showPointModal.id);
+
+                    await methods.deleteDoc(docRef);
+
+                    setShowPointModal(null);
+
+                } catch (e) { 
+
+                    console.error('Error deleting point:', e);
+
+                    alert('Failed to delete station: ' + e.message);
+
+                }
+
+            };
+
+
+
+            if (view === 'splash') {
+
+                return (
+
+                    <div className={`relative min-h-screen overflow-hidden ${isLandscape && window.innerWidth < 768 ? 'overflow-y-auto' : ''}`}>
+
+                        {/* Loading GIF overlay on mobile */}
+
+                        {showLayoutGif && (
+
+                            <div className="fixed inset-0 z-[300] flex items-center justify-center bg-white pointer-events-none animate-in fade-in duration-300">
+
+                                <img 
+
+                                    src="https://static.wixstatic.com/media/a6967f_9142290f38c8426c98c49711bd0b7974~mv2.gif" 
+
+                                    alt="Loading" 
+
+                                    className={gifFadingOut ? "w-4/5 h-4/5 object-contain gif-fade-out" : "w-4/5 h-4/5 object-contain gif-no-loop"}
+
+                                />
+
+                            </div>
+
+                        )}
+
+                        <div onClick={startNewRound} className="min-h-screen bg-white flex flex-col items-center justify-center cursor-pointer relative overflow-hidden">
+
+                            <div className="absolute top-4 md:top-8 left-1/2 transform -translate-x-1/2 md:left-8 md:transform-none z-10 w-[90%] md:w-auto"><img src={CORNER_LOGO} className="w-full md:w-[286px] h-auto" /></div>
+
+                        <div className="flex-1 flex items-center justify-center w-full relative -translate-y-[5%]">
+
+                            <img src={SPLASH_IMAGE} className="max-w-[85%] md:max-w-full max-h-[80vh] object-contain drop-shadow-2xl rounded-[3rem]" />
+
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-heartbeat">
+
+                                <Icons.GradientHeart size={120} />
+
+                            </div>
+
+                        </div>
+
+                        </div>
+
+                    </div>
+
+                );
+
+            }
+
+
+
+            return (
+
+                <div className={`min-h-screen flex flex-col bg-white font-sans text-slate-900 select-none ${isLandscape && window.innerWidth < 768 ? '' : 'h-screen md:overflow-hidden'} overflow-y-auto`}>
+
+                    {/* NAVBAR */}
+
+                    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 md:px-8 h-20 md:h-24 flex items-center justify-between shadow-sm">
+
+                        <div className="flex items-center gap-1 md:gap-1">
+
+                            <div className={`${isAdmin ? 'bg-amber-500 p-2.5 md:p-3.5' : 'bg-transparent p-0'} rounded-2xl text-white overflow-hidden flex items-center justify-center`}>
+
+                                {isAdmin ? <Icons.Map /> : <img src={ROUND_ICON} className="w-12 h-12 md:w-16 md:h-16 object-contain" alt="Pulse Icon" />}
+
+                            </div>
+
+                            <div>
+
+                                <h1 className="font-black uppercase tracking-tighter text-lg md:text-2xl leading-none">
+
+                                    {isAdmin ? 'Analysis Management' : 'FACTORY VISIT'}
+
+                                </h1>
+
+                                <p className="text-[10px] md:text-xs text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">
+
+                                    {isAdmin ? 'Configuration and Monitoring' : 'PULSE'}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div className="flex items-center gap-3">
+
+                            {isAdmin && (
+
+                                <button 
+
+                                    onClick={() => setAdminMode(adminMode === 'dashboard' ? 'map_edit' : 'dashboard')}
+
+                                    className={`px-4 py-3 rounded-xl font-bold text-xs uppercase flex items-center gap-2 transition-all ${adminMode === 'map_edit' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+
+                                >
+
+                                    <Icons.Settings />
+
+                                    {adminMode === 'map_edit' ? 'View Dashboard' : 'Setup Map'}
+
+                                </button>
+
+                            )}
+
+                            <button 
+
+                                onClick={() => isAdmin ? setIsAdmin(false) : setShowLoginModal(true)} 
+
+                                className="px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-xs md:text-sm uppercase border-2 border-slate-100 hover:border-indigo-600 transition-all"
+
+                            >
+
+                                {isAdmin ? 'Exit' : 'Management'}
+
+                            </button>
+
+                        </div>
+
+                    </nav>
+
+
+
+                    {/* MAIN */}
+
+                    <main className="flex-1 overflow-y-auto md:overflow-hidden relative bg-slate-50/30">
+
+                        <div className="max-w-[1400px] mx-auto p-4 md:p-6 md:pb-10 h-full md:flex md:flex-col">
+
+                            
+
+                            {isAdmin && adminMode === 'dashboard' ? (
+
+                                <div className="space-y-10 animate-in fade-in duration-500">
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                                        <div className={`${getPerformanceColor(parseFloat(stats.avg)).bg} text-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] shadow-xl relative overflow-hidden`}>
+
+                                            <p className="font-black uppercase text-[10px] tracking-widest mb-2 opacity-70">Global Performance Ratio</p>
+
+                                            <h4 className="text-5xl md:text-7xl font-black">{stats.avg}%</h4>
+
+                                        </div>
+
+                                        <div className="bg-white border-2 border-slate-100 p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] flex items-center gap-6 shadow-sm">
+
+                                            <div className="bg-slate-50 p-4 rounded-3xl text-indigo-600"><Icons.Stats /></div>
+
+                                            <div><p className="text-slate-400 font-black text-[10px] mb-1">TOTAL INSPECTIONS</p><h4 className="text-3xl font-black">{stats.total}</h4></div>
+
+                                        </div>
+
+                                        <div className="bg-white border-2 border-slate-100 p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] flex items-center gap-6 shadow-sm">
+
+                                            <div className="bg-slate-50 p-4 rounded-3xl text-indigo-600"><Icons.Check /></div>
+
+                                            <div><p className="text-slate-400 font-black text-[10px] mb-1">ACTIVE STATIONS</p><h4 className="text-3xl font-black">{points.length}</h4></div>
+
+                                        </div>
+
+                                    </div>
+
+                                    
+
+                                    <div className="bg-white border-2 border-slate-100 rounded-[3rem] p-6 md:p-10 shadow-sm">
+
+                                        <h3 className="text-xl md:text-2xl font-black uppercase mb-10 px-4">Performance by Station</h3>
+
+                                        <div className="space-y-4">
+
+                                            {stats.list.map(s => {
+
+                                                const colors = getPerformanceColor(s.performance);
+
+                                                return (
+
+                                                    <div key={s.name} className="bg-slate-50 p-6 rounded-3xl">
+
+                                                        <div className="flex justify-between items-center mb-4">
+
+                                                            <h5 className="text-lg font-black uppercase tracking-tight">{s.name}</h5>
+
+                                                            <span className={`font-bold ${colors.text}`}>{s.performance.toFixed(1)}%</span>
+
+                                                        </div>
+
+                                                        <div className="h-4 w-full bg-slate-200 rounded-full overflow-hidden">
+
+                                                            <div className={`h-full rounded-full transition-all duration-1000 ${colors.bar}`} style={{ width: `${s.performance}%` }} />
+
+                                                        </div>
+
+                                                    </div>
+
+                                                );
+
+                                            })}
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            ) : (
+
+                                <div className="space-y-6">
+
+                                    {isAdmin && adminMode === 'map_edit' && (
+
+                                        <div className="bg-amber-100 text-amber-800 p-4 rounded-2xl font-bold text-sm flex items-center gap-3 animate-pulse">
+
+                                            <Icons.Settings /> Edit Mode: Click on map to add or station to edit/remove.
+
+                                        </div>
+
+                                    )}
+
+                                    <div 
+
+                                        ref={mapContainerRef}
+
+                                        onClick={handleMapClick}
+
+                                        className={`relative bg-white rounded-[2rem] md:rounded-[4rem] shadow-2xl overflow-y-auto md:overflow-hidden border-[8px] md:border-[16px] border-white ring-1 ring-slate-200 animate-in zoom-in-95 w-full md:w-full md:h-[90%] md:flex md:items-center md:justify-center ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
+
+                                    >
+
+                                        <img src={LAYOUT_IMAGE} className="w-full h-full object-contain block pointer-events-none" />
+
+                                        {points.map(pt => {
+
+                                            const pendingStatus = pendingEvaluations[pt.id];
+
+                                            const displayStatus = (isAdmin && adminMode === 'dashboard') ? currentStatusMap[pt.id] : pendingStatus;
+
+                                            const isPending = !!pendingStatus;
+
+                                            
+
+                                            return (
+
+                                                <div key={pt.id} className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10" style={{ top: `${pt.y}%`, left: `${pt.x}%` }}>
+
+                                                    <button 
+
+                                                        onClick={(e) => {
+
+                                                            e.stopPropagation();
+
+                                                            if (isAdmin && adminMode === 'map_edit') {
+
+                                                                setEditPointName(pt.name);
+
+                                                                setShowPointModal(pt);
+
+                                                            } else {
+
+                                                                setActiveEval(pt);
+
+                                                            }
+
+                                                        }} 
+
+                                                        className={`group flex flex-col items-center gap-2 transition-all duration-300 ${isPending ? 'scale-110' : 'active:scale-90'}`}
+
+                                                    >
+
+                                                        <div className={`button-group-border p-1 md:p-1.5 flex items-center gap-1 shadow-2xl transition-all ${isPending ? 'ring-4 ring-indigo-400 ring-offset-2' : 'opacity-80 group-hover:opacity-100'}`}>
+
+                                                            <SmileyFace type="sad" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'sad' ? 'bg-red-500 text-white' : 'text-white/20'}`} />
+
+                                                            <SmileyFace type="neutral" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'neutral' ? 'bg-yellow-500 text-white' : 'text-white/20'}`} />
+
+                                                            <SmileyFace type="happy" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'happy' ? 'bg-green-500 text-white' : 'text-white/20'}`} />
+
+                                                        </div>
+
+                                                        <div className={`label-gradient text-white text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest shadow-xl transition-all ${isPending ? 'opacity-100' : 'opacity-60'}`}>
+
+                                                            {pt.name}
+
+                                                        </div>
+
+                                                    </button>
+
+                                                </div>
+
+                                            );
+
+                                        })}
+
+                                    </div>
+
+                                </div>
+
+                            )}
+
+                        </div>
+
+                    </main>
+
+
+
+                    {/* SEND BUTTON */}
+
+                    {!isAdmin && Object.keys(pendingEvaluations).length > 0 && (
+
+                        <div className="fixed bottom-10 right-6 md:right-10 z-[100] animate-in slide-in-from-bottom-10">
+
+                            <button onClick={submitAll} disabled={isSubmitting} className="group relative w-20 h-20 md:w-28 md:h-28 bg-indigo-600 text-white rounded-full shadow-[0_20px_50px_rgba(79,70,229,0.5)] flex flex-col items-center justify-center hover:bg-indigo-700 hover:scale-110 transition-all border-4 border-white">
+
+                                {isSubmitting ? (
+
+                                    <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+
+                                ) : (
+
+                                    <>
+
+                                        <Icons.Send />
+
+                                        <span className="text-[10px] font-black uppercase mt-1">Send</span>
+
+                                    </>
+
+                                )}
+
+                                <div className="absolute -top-2 -right-2 w-10 h-10 bg-red-500 text-white text-lg font-black rounded-full border-4 border-white flex items-center justify-center shadow-lg">
+
+                                    {Object.keys(pendingEvaluations).length}
+
+                                </div>
+
+                            </button>
+
+                        </div>
+
+                    )}
+
+
+
+                    {/* SUCCESS PULSE OVERLAY */}
+
+                    {showSuccessPulse && (
+
+                        <div className="fixed inset-0 z-[500] flex items-center justify-center pointer-events-none">
+
+                            <div className="animate-success-pulse">
+
+                                <Icons.GradientHeart size={250} />
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+
+
+                    {/* EVALUATION MODAL - NOW IN ENGLISH */}
+
+                    {activeEval && (
+
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/90 backdrop-blur-xl p-4 animate-in fade-in duration-300">
+
+                            <div className="bg-white rounded-[3rem] p-8 md:p-16 w-full max-w-5xl shadow-2xl flex flex-col items-center">
+
+                                <header className="mb-10 text-center">
+
+                                    <h3 className="text-4xl md:text-7xl font-black text-slate-900 mb-4 uppercase tracking-tighter leading-none">{activeEval.name}</h3>
+
+                                    <p className="text-slate-400 font-medium text-lg md:text-2xl uppercase">WHAT IS THE STATUS OF THIS STATION?</p>
+
+                                </header>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-10 w-full max-w-4xl">
+
+                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'sad'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-red-500 hover:bg-red-50 transition-all active:scale-95 shadow-xl">
+
+                                        <SmileyFace type="sad" className="w-16 h-16 md:w-40 md:h-40 text-red-500" />
+
+                                        <span className="font-black text-xl md:text-2xl uppercase text-red-600">CRITICAL</span>
+
+                                    </button>
+
+                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'neutral'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-yellow-500 hover:bg-yellow-50 transition-all active:scale-95 shadow-xl">
+
+                                        <SmileyFace type="neutral" className="w-16 h-16 md:w-40 md:h-40 text-yellow-500" />
+
+                                        <span className="font-black text-xl uppercase text-yellow-600 text-center">ACCEPTABLE</span>
+
+                                    </button>
+
+                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'happy'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-slate-50 border-4 border-transparent hover:border-green-500 hover:bg-green-50 transition-all active:scale-95 shadow-xl">
+
+                                        <SmileyFace type="happy" className="w-16 h-16 md:w-40 md:h-40 text-green-500" />
+
+                                        <span className="font-black text-xl md:text-2xl uppercase text-green-600">EXCELLENT</span>
+
+                                    </button>
+
+                                </div>
+
+                                <button onClick={() => setActiveEval(null)} className="py-6 px-12 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-xl hover:bg-slate-200 transition-all">CANCEL</button>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+
+
+                    {/* ADMIN EDIT POINT MODAL */}
+
+                    {showPointModal && (
+
+                        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-6 animate-in zoom-in-95">
+
+                            <div className="bg-white rounded-[3rem] p-10 w-full max-w-lg shadow-2xl relative">
+
+                                <button onClick={() => setShowPointModal(null)} className="absolute top-8 right-8 text-slate-400 hover:text-slate-600"><Icons.X /></button>
+
+                                <h3 className="text-2xl font-black mb-8 uppercase text-indigo-600">{showPointModal.id ? 'Edit Station' : 'New Station'}</h3>
+
+                                <div className="space-y-6">
+
+                                    <div className="space-y-2">
+
+                                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Station Name</label>
+
+                                        <input autoFocus type="text" placeholder="e.g. Laser Stock" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold border-4 border-transparent focus:border-indigo-500 outline-none" value={editPointName} onChange={e => setEditPointName(e.target.value)} />
+
+                                    </div>
+
+                                    <div className="flex gap-4">
+
+                                        <button onClick={savePoint} className="flex-1 bg-indigo-600 text-white font-black py-6 rounded-2xl text-lg uppercase shadow-xl hover:bg-indigo-700 transition-all">Save</button>
+
+                                        {showPointModal.id && (
+
+                                            <button onClick={deletePoint} className="bg-red-50 p-6 rounded-2xl text-red-500 hover:bg-red-100 transition-all" title="Delete"><Icons.Trash /></button>
+
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+
+
+                    {/* MANAGEMENT LOGIN */}
+
+                    {showLoginModal && (
+
+                        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-6">
+
+                            <div className="bg-white rounded-[2.5rem] p-10 md:p-16 w-full max-w-xl shadow-2xl relative">
+
+                                <button onClick={() => setShowLoginModal(false)} className="absolute top-8 right-8 text-slate-400"><Icons.X /></button>
+
+                                <h3 className="text-3xl font-black mb-10 uppercase text-center">Management Access</h3>
+
+                                <form onSubmit={(e) => { e.preventDefault(); if(loginForm.user.toUpperCase()==='GESTÃO'&&loginForm.pass==='789'){setIsAdmin(true); setShowLoginModal(false); } }} className="space-y-6">
+
+                                    <input type="text" placeholder="Username" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold outline-none border-4 border-transparent focus:border-indigo-500 shadow-inner" onChange={e => setLoginForm({...loginForm, user: e.target.value})} />
+
+                                    <input type="password" placeholder="Password" className="w-full bg-slate-50 p-6 rounded-2xl text-xl font-bold outline-none border-4 border-transparent focus:border-indigo-500 shadow-inner" onChange={e => setLoginForm({...loginForm, pass: e.target.value})} />
+
+                                    <button type="submit" className="w-full bg-indigo-600 text-white font-black py-6 rounded-2xl text-lg uppercase shadow-xl hover:bg-indigo-700 transition-all">Login</button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+                </div>
+
+            );
+
+        }
+
+
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+
+        root.render(<App />);
+
+    </script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker registado!'))
+            .catch(err => console.log('Erro ao registar SW:', err));
+        });
+      }
+    </script>
+
+</body>
+
 </html>
+
+
+
+
+
