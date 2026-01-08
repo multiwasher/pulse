@@ -77,6 +77,20 @@
         }
         .animate-success-pulse { animation: pulse-success 1.5s ease-out forwards; }
 
+        @keyframes fade-out {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .animate-out.fade-out.duration-500 { animation: fade-out 0.5s ease-out forwards; }
+        .gif-fade-out { animation: fade-out 1.5s ease-out forwards; }
+        .gif-no-loop { animation: play-once 3.5s steps(1) 1 forwards; }
+        
+        @keyframes play-once {
+            0% { opacity: 1; }
+            99% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+
         .label-gradient {
             border-radius: 0.5rem;
             background: linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%);
@@ -189,8 +203,8 @@
             const [activeEval, setActiveEval] = useState(null);
             const [isSubmitting, setIsSubmitting] = useState(false);
             const [isReady, setIsReady] = useState(false);
-            const [showSuccessPulse, setShowSuccessPulse] = useState(false);
-            
+            const [showSuccessPulse, setShowSuccessPulse] = useState(false);            const [showLayoutGif, setShowLayoutGif] = useState(false);
+            const [gifFadingOut, setGifFadingOut] = useState(false);            
             // Edit Point States
             const [showPointModal, setShowPointModal] = useState(null); 
             const [editPointName, setEditPointName] = useState("");
@@ -229,7 +243,21 @@
 
             const startNewRound = () => {
                 setPendingEvaluations({});
-                setView('app');
+                // Show loading GIF on mobile
+                if (window.innerWidth < 768) {
+                    setShowLayoutGif(true);
+                    setGifFadingOut(false);
+                    // Let GIF animate and pause for 3.5s, then fade out for 1.5s
+                    setTimeout(() => {
+                        setGifFadingOut(true);
+                    }, 3500);
+                    setTimeout(() => {
+                        setShowLayoutGif(false);
+                        setView('app');
+                    }, 5000);
+                } else {
+                    setView('app');
+                }
             };
 
             // Inactivity timer for app view - return to splash after 30s
@@ -351,13 +379,25 @@
 
             if (view === 'splash') {
                 return (
-                    <div onClick={startNewRound} className="min-h-screen bg-white flex flex-col items-center justify-center cursor-pointer relative overflow-hidden">
-                        <div className="absolute top-4 md:top-8 left-1/2 transform -translate-x-1/2 md:left-8 md:transform-none z-10 w-[90%] md:w-auto"><img src={CORNER_LOGO} className="w-full md:w-[286px] h-auto" /></div>
+                    <div className="relative min-h-screen">
+                        {/* Loading GIF overlay on mobile */}
+                        {showLayoutGif && (
+                            <div className="fixed inset-0 z-[300] flex items-center justify-center bg-white pointer-events-none animate-in fade-in duration-300">
+                                <img 
+                                    src="https://static.wixstatic.com/media/a6967f_9142290f38c8426c98c49711bd0b7974~mv2.gif" 
+                                    alt="Loading" 
+                                    className={gifFadingOut ? "w-4/5 h-4/5 object-contain gif-fade-out" : "w-4/5 h-4/5 object-contain gif-no-loop"}
+                                />
+                            </div>
+                        )}
+                        <div onClick={startNewRound} className="min-h-screen bg-white flex flex-col items-center justify-center cursor-pointer relative overflow-hidden">
+                            <div className="absolute top-4 md:top-8 left-1/2 transform -translate-x-1/2 md:left-8 md:transform-none z-10 w-[90%] md:w-auto"><img src={CORNER_LOGO} className="w-full md:w-[286px] h-auto" /></div>
                         <div className="flex-1 flex items-center justify-center w-full relative -translate-y-[5%]">
                             <img src={SPLASH_IMAGE} className="max-w-[85%] md:max-w-full max-h-[80vh] object-contain drop-shadow-2xl rounded-[3rem]" />
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-heartbeat">
                                 <Icons.GradientHeart size={120} />
                             </div>
+                        </div>
                         </div>
                     </div>
                 );
