@@ -7,7 +7,7 @@
 //const CACHE_NAME = 'factory-pulse-v3';
 
 // Depois da atualização (muda para v2, v3, etc.)
-const CACHE_NAME = 'factory-pulse-v8';
+const CACHE_NAME = 'factory-pulse-v9';
 
 
 const assets = [
