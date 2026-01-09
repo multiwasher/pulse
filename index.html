@@ -341,6 +341,12 @@
             flex-shrink: 0;
         }
 
+        @media (min-width: 768px) {
+            .factory-grid {
+                grid-template-rows: 1fr 40px 1fr 1fr 34px 1fr;
+            }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -1082,19 +1088,19 @@
 
                     {/* NAVBAR */}
 
-                    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 md:px-8 h-20 md:h-24 flex items-center justify-between shadow-sm">
+                    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 md:px-8 h-20 md:h-[77px] flex items-center justify-between shadow-sm">
 
                         <div className="flex items-center gap-1 md:gap-1">
 
                             <div className={`${isAdmin ? 'bg-amber-500 p-2.5 md:p-3.5' : 'bg-transparent p-0'} rounded-2xl text-white overflow-hidden flex items-center justify-center`}>
 
-                                {isAdmin ? <Icons.Map /> : <img src={ROUND_ICON} className="w-12 h-12 md:w-16 md:h-16 object-contain" alt="Pulse Icon" />}
+                                {isAdmin ? <Icons.Map /> : <img src={ROUND_ICON} className="w-12 h-12 md:w-14 md:h-14 object-contain" alt="Pulse Icon" />}
 
                             </div>
 
                             <div>
 
-                                <h1 className="font-black uppercase tracking-tighter text-lg md:text-2xl leading-none">
+                                <h1 className="font-black uppercase tracking-tighter text-lg md:text-xl leading-none">
 
                                     {isAdmin ? 'Analysis Management' : 'FACTORY VISIT'}
 
@@ -1110,8 +1116,8 @@
 
                         </div>
 
-                        <div className="flex-1 flex justify-center">
-                            <img src="https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png" alt="Factory Logo" className="h-12 md:h-16 w-auto object-contain" />
+                        <div className="flex-1 hidden md:flex justify-center">
+                            <img src="https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png" alt="Factory Logo" className="h-11 md:h-14 w-auto object-contain" />
                         </div>
 
                         <div className="flex items-center gap-3">
@@ -1248,13 +1254,17 @@
 
                                     )}
 
+                                    <div className="flex justify-center mb-6 md:hidden">
+                                        <img src="https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png" alt="Factory Logo" className="max-w-[80%] h-auto object-contain" />
+                                    </div>
+
                                     <div
 
                                         ref={mapContainerRef}
 
                                         onClick={handleMapClick}
 
-                                        className={`glass-container animate-in zoom-in-95 w-full md:w-full md:flex md:items-center md:justify-center md:p-12 ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
+                                        className={`glass-container animate-in zoom-in-95 w-full md:w-full lg:h-[calc(100vh-180px)] md:flex md:items-center md:justify-center md:p-12 ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
 
                                     >
 
