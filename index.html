@@ -210,7 +210,7 @@
 
         .button-group-border {
 
-            background: linear-gradient(#fff, #fff) padding-box, 
+            background: linear-gradient(#000, #000) padding-box, 
 
                         linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%) border-box;
 
@@ -374,6 +374,10 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
 
+        .bg-welding, .bg-polishing, .bg-tube, .bg-supermarket, .bg-assembly, .bg-packing, .bg-tech, .bg-washlab, .bg-pre-assembly {
+            font-size: 0.95rem !important;
+        }
+
         .walkway {
             background: rgb(151, 151, 151);
             /*backdrop-filter: blur(10px);*/
@@ -385,56 +389,70 @@
         }
 
         .bg-laser { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #e85b5b 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: #ffffff;
         }
         .bg-finished { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #5be8b0 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: #ffffff;
         }
         .bg-welding { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #216e9e 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: #ffffff;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3);
         }
         .bg-polishing { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #216e9e 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: #ffffff;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3);
         }
         .bg-tube { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #216e9e 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: #ffffff;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3);
         }
         .bg-supermarket { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #e8b05b 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: #ffffff;
+        }
+        .bg-pre-assembly { 
+            background: linear-gradient(0deg, #216e9e 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: #ffffff;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3);
         }
         .bg-assembly { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #216e9e 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: #ffffff;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3);
         }
         .bg-packing { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #216e9e 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: #ffffff;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3);
         }
         .bg-tech { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #216e9e 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: #ffffff;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3);
         }
         .bg-washlab { 
-            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            background: linear-gradient(0deg, #5bb2e8 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
             color: rgb(255, 255, 255);
             font-style: italic;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3);
         }
+        
 
         .bg-kaizen {
             background: rgba(255, 255, 255, 1);
@@ -502,7 +520,7 @@
 
                     <div className="bottom-row-container">
                         <div className="zone bg-packing">Packing</div>
-                        <div className="zone bg-supermarket">Pre-Assembly</div>
+                        <div className="zone bg-pre-assembly">Pre-Assembly</div>
                         <div className="zone bg-kaizen p-0">
                             <span className="vertical-text font-bold text-lg">改善</span>
                         </div>
@@ -1282,15 +1300,15 @@
 
                                                         <div className={`button-group-border p-1 md:p-1.5 flex items-center gap-1 shadow-2xl transition-all ${isPending ? 'ring-4 ring-indigo-400 ring-offset-2' : 'opacity-100 group-hover:opacity-100'}`}>
 
-                                                            <SmileyFace type="sad" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'sad' ? 'bg-red-500 text-white' : 'text-black/40'}`} />
+                                                            <SmileyFace type="sad" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'sad' ? 'bg-red-500 text-white' : 'text-white'}`} />
 
-                                                            <SmileyFace type="neutral" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'neutral' ? 'bg-yellow-500 text-white' : 'text-black/40'}`} />
+                                                            <SmileyFace type="neutral" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'neutral' ? 'bg-yellow-500 text-white' : 'text-white'}`} />
 
-                                                            <SmileyFace type="happy" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'happy' ? 'bg-green-500 text-white' : 'text-black/40'}`} />
+                                                            <SmileyFace type="happy" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'happy' ? 'bg-green-500 text-white' : 'text-white'}`} />
 
                                                         </div>
 
-                                                        <div className={`label-gradient text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest shadow-xl transition-all ${isPending ? 'opacity-100' : 'opacity-100'}`} style={{ color: '#04B7DB' }}>
+                                                        <div className={`label-gradient text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest shadow-xl transition-all ${isPending ? 'opacity-100' : 'opacity-100'}`} style={{ color: '#000000' }}>
 
                                                             {pt.name}
 
