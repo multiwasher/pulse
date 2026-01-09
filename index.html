@@ -327,13 +327,143 @@
     ⚠️ Sem ligação à internet. A usar dados em cache.
 </div>
 
+    <style>
+        .factory-grid {
+            display: grid;
+            grid-template-columns: 120px 40px 1fr 1fr 80px 1.2fr 1fr;
+            grid-template-rows: 130px 40px 90px 100px 40px 130px;
+            gap: 0;
+            max-width: 1300px;
+            width: 100%;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .zone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 10px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: default;
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            line-height: 1.2;
+            color: white;
+        }
+
+        .zone:hover {
+            transform: translateY(-8px) scale(1.02);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .walkway {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            border: none;
+            margin: 0;
+            z-index: 1;
+            position: relative;
+        }
+
+        .bg-laser { background: rgba(254, 243, 199, 0.28); color: #fcd34d; }
+        .bg-finished { background: rgba(216, 180, 254, 0.28); color: #d8b4fe; }
+        .bg-welding { background: rgba(248, 113, 113, 0.28); color: #fca5a5; }
+        .bg-polishing { background: rgba(250, 204, 21, 0.28); color: #fde047; }
+        .bg-tube { background: rgba(52, 211, 153, 0.28); color: #6ee7b7; }
+        .bg-supermarket { background: rgba(251, 146, 60, 0.28); color: #fdba74; }
+        .bg-assembly { background: rgba(59, 130, 246, 0.28); color: #93c5fd; }
+        .bg-packing { background: rgba(244, 114, 182, 0.28); color: #f9a8d4; }
+        .bg-tech { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+        .bg-washlab { 
+            background: rgba(30, 41, 59, 0.75);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: white;
+            font-style: italic;
+        }
+
+        .bg-kaizen {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-bottom: 5px solid #22c55e !important;
+        }
+
+        .vertical-text {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            white-space: nowrap;
+            letter-spacing: 0.2em;
+        }
+
+        .bottom-row-container {
+            grid-row: 6;
+            grid-column: 3 / 8;
+            display: grid;
+            grid-template-columns: 1fr 1fr 94px 1.04fr 0.7fr;
+            gap: 0;
+        }
+    </style>
+
     <script type="text/babel">
 
         const { useState, useEffect, useCallback, useMemo, useRef } = React;
 
 
 
-        const LAYOUT_IMAGE = "https://static.wixstatic.com/media/a6967f_12817a59397a4966844c497c2edf9a35~mv2.png";
+        const FactoryLayout = () => (
+            <div className="w-full h-full overflow-x-auto">
+                <div className="factory-grid min-w-[1000px]">
+                    <div className="zone bg-laser" style={{gridRow: '1 / span 3', gridColumn: '1'}}>Laser Stock</div>
+                    <div className="zone bg-finished" style={{gridRow: '4 / span 3', gridColumn: '1'}}>Finished Product</div>
+
+                    <div className="walkway walkway-v" style={{gridRow: '1 / span 6', gridColumn: '2'}}></div>
+
+                    <div className="zone bg-welding" style={{gridRow: '1', gridColumn: '3 / span 3'}}>Welding</div>
+                    <div className="zone bg-polishing" style={{gridRow: '1', gridColumn: '6 / span 2'}}>Polishing</div>
+
+                    <div className="walkway walkway-h" style={{gridRow: '2', gridColumn: '3 / span 5'}}></div>
+
+                    <div className="zone bg-tube" style={{gridRow: '3', gridColumn: '3'}}>Tube Cutting</div>
+                    <div className="zone bg-supermarket" style={{gridRow: '3', gridColumn: '4'}}>Supermarket</div>
+                    <div className="zone bg-assembly" style={{gridRow: '4', gridColumn: '3 / span 2'}}>Assembly</div>
+
+                    <div className="walkway walkway-v" style={{gridRow: '3 / 5', gridColumn: '5'}}></div>
+
+                    <div className="zone bg-supermarket" style={{gridRow: '3', gridColumn: '6 / span 2'}}>Supermarket</div>
+                    <div className="zone bg-assembly" style={{gridRow: '4', gridColumn: '6'}}>Assembly</div>
+                    <div className="zone bg-tech" style={{gridRow: '4', gridColumn: '7'}}>Tech Support</div>
+
+                    <div className="walkway walkway-h" style={{gridRow: '5', gridColumn: '3 / span 5'}}></div>
+
+                    <div className="bottom-row-container">
+                        <div className="zone bg-packing">Packing</div>
+                        <div className="zone bg-supermarket">Pre-Assembly</div>
+                        <div className="zone bg-kaizen p-0">
+                            <span className="vertical-text font-bold text-lg">改善</span>
+                        </div>
+                        <div className="zone" style={{background: 'rgba(255,255,255,0.12)', padding: '2px 24px'}}>
+                            <img src="https://static.wixstatic.com/media/a6967f_07f6e296aaa64507bb9d14997649eaeb~mv2.png" 
+                                 className="h-8 w-full object-contain brightness-125"/>
+                        </div>
+                        <div className="zone bg-washlab">Washlab</div>
+                    </div>
+                </div>
+            </div>
+        );
 
         const SPLASH_IMAGE = "https://static.wixstatic.com/media/a6967f_1a75ce18a54d46f8994283c1798fbbfb~mv2.png";
 
@@ -1057,7 +1187,7 @@
 
                                     >
 
-                                        <img src={LAYOUT_IMAGE} className="w-full h-full object-contain block pointer-events-none" />
+                                        <FactoryLayout />
 
                                         {points.map(pt => {
 
