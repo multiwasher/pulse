@@ -200,7 +200,9 @@
 
             border-radius: 0.5rem;
 
-            background: linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%);
+            /*background: linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%);*/
+
+            background: white;
 
         }
 
@@ -208,7 +210,7 @@
 
         .button-group-border {
 
-            background: linear-gradient(#000, #000) padding-box, 
+            background: linear-gradient(#fff, #fff) padding-box, 
 
                         linear-gradient(90deg, rgb(81, 184, 234) 0%, rgb(27, 71, 148) 100%) border-box;
 
@@ -330,8 +332,8 @@
     <style>
         .factory-grid {
             display: grid;
-            grid-template-columns: 120px 40px 1fr 1fr 80px 1.2fr 1fr;
-            grid-template-rows: 160px 40px 120px 140px 40px 160px;
+            grid-template-columns: 120px 40px 1fr 1fr 80px 1.38fr 0.85fr;
+            grid-template-rows: 160px 40px 120px 119px 34px 136px;
             gap: 0;
             width: 100%;
             height: 100%;
@@ -352,7 +354,7 @@
             margin: 10px;
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgb(10, 10, 10, 0.2);
+            /*box-shadow: 0 8px 32px 0 rgb(10, 10, 10, 0.2);*/
             transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             cursor: default;
             border-radius: 1.5rem;
@@ -373,34 +375,71 @@
         }
 
         .walkway {
-            background: rgb(245, 238, 238);
+            background: rgb(151, 151, 151);
             /*backdrop-filter: blur(10px);*/
-            border: 1px solid rgb(255, 217, 0);
+            /*border: 1px solid rgb(255, 217, 0);*/
             margin: 0;
             z-index: 1;
             position: relative;
+            border-radius: 0.15rem;
         }
 
-        .bg-laser { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
-        .bg-finished { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
-        .bg-welding { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important; }
-        .bg-polishing { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important; }
-        .bg-tube { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
-        .bg-supermarket { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
-        .bg-assembly { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important; }
-        .bg-packing { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
-        .bg-tech { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
-        .bg-washlab { 
-            background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%);
+        .bg-laser { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
             border-color: rgba(245, 245, 245, 0.6);
-            color: white;
+            color: #ffffff;
+        }
+        .bg-finished { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: #ffffff;
+        }
+        .bg-welding { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: #ffffff;
+        }
+        .bg-polishing { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: #ffffff;
+        }
+        .bg-tube { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: #ffffff;
+        }
+        .bg-supermarket { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: #ffffff;
+        }
+        .bg-assembly { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: #ffffff;
+        }
+        .bg-packing { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: #ffffff;
+        }
+        .bg-tech { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: #ffffff;
+        }
+        .bg-washlab { 
+            background: linear-gradient(90deg, #000000 0%, #208ed3 100%);
+            border-color: rgba(245, 245, 245, 0.6);
+            color: rgb(255, 255, 255);
             font-style: italic;
         }
 
         .bg-kaizen {
             background: rgba(255, 255, 255, 1);
             color: #070000;
-            border-bottom: 5px solid #22c55e !important;
+            border-left: 5px solid #22c55e !important;
         }
 
         .vertical-text {
@@ -414,12 +453,14 @@
             grid-row: 6;
             grid-column: 3 / 8;
             display: grid;
-            grid-template-columns: 1fr 1fr 94px 1.04fr 0.7fr;
+            grid-template-columns: 1fr 0.9fr 103px 1.04fr 0.7fr;
             gap: 0;
         }
 
         .glass-container {
-            background: radial-gradient(circle,rgba(1, 44, 74, 0.75) 0%, rgb(1, 1, 1,0.95) 100%);
+            background: rgb(237, 236, 236);
+            /*background: radial-gradient(circle, rgb(81, 184, 234, 0.80) 0%, rgb(0, 0, 0) 100%);*/
+            /*background: radial-gradient(circle,rgba(1, 44, 74, 0.75) 0%, rgb(1, 1, 1,0.95) 100%);*/
             backdrop-filter: blur(30px) !important;
             border: 1px solid rgba(255, 255, 255, 0.05) !important;
             border-radius: 4rem;
@@ -1239,17 +1280,17 @@
 
                                                     >
 
-                                                        <div className={`button-group-border p-1 md:p-1.5 flex items-center gap-1 shadow-2xl transition-all ${isPending ? 'ring-4 ring-indigo-400 ring-offset-2' : 'opacity-80 group-hover:opacity-100'}`}>
+                                                        <div className={`button-group-border p-1 md:p-1.5 flex items-center gap-1 shadow-2xl transition-all ${isPending ? 'ring-4 ring-indigo-400 ring-offset-2' : 'opacity-100 group-hover:opacity-100'}`}>
 
-                                                            <SmileyFace type="sad" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'sad' ? 'bg-red-500 text-white' : 'text-white/20'}`} />
+                                                            <SmileyFace type="sad" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'sad' ? 'bg-red-500 text-white' : 'text-black/40'}`} />
 
-                                                            <SmileyFace type="neutral" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'neutral' ? 'bg-yellow-500 text-white' : 'text-white/20'}`} />
+                                                            <SmileyFace type="neutral" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'neutral' ? 'bg-yellow-500 text-white' : 'text-black/40'}`} />
 
-                                                            <SmileyFace type="happy" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'happy' ? 'bg-green-500 text-white' : 'text-white/20'}`} />
+                                                            <SmileyFace type="happy" className={`w-5 h-5 md:w-8 md:h-8 rounded-full transition-all ${displayStatus === 'happy' ? 'bg-green-500 text-white' : 'text-black/40'}`} />
 
                                                         </div>
 
-                                                        <div className={`label-gradient text-white text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest shadow-xl transition-all ${isPending ? 'opacity-100' : 'opacity-60'}`}>
+                                                        <div className={`label-gradient text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest shadow-xl transition-all ${isPending ? 'opacity-100' : 'opacity-100'}`} style={{ color: '#04B7DB' }}>
 
                                                             {pt.name}
 
