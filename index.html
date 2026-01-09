@@ -331,11 +331,12 @@
         .factory-grid {
             display: grid;
             grid-template-columns: 120px 40px 1fr 1fr 80px 1.2fr 1fr;
-            grid-template-rows: 130px 40px 90px 100px 40px 130px;
+            grid-template-rows: 160px 40px 120px 140px 40px 160px;
             gap: 0;
-            max-width: 1300px;
             width: 100%;
+            height: 100%;
             animation: fadeIn 1s ease-out;
+            flex-shrink: 0;
         }
 
         @keyframes fadeIn {
@@ -351,7 +352,7 @@
             margin: 10px;
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+            box-shadow: 0 8px 32px 0 rgb(10, 10, 10, 0.2);
             transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             cursor: default;
             border-radius: 1.5rem;
@@ -372,33 +373,33 @@
         }
 
         .walkway {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(10px);
-            border: none;
+            background: rgb(245, 238, 238);
+            /*backdrop-filter: blur(10px);*/
+            border: 1px solid rgb(255, 217, 0);
             margin: 0;
             z-index: 1;
             position: relative;
         }
 
-        .bg-laser { background: rgba(254, 243, 199, 0.28); color: #fcd34d; }
-        .bg-finished { background: rgba(216, 180, 254, 0.28); color: #d8b4fe; }
-        .bg-welding { background: rgba(248, 113, 113, 0.28); color: #fca5a5; }
-        .bg-polishing { background: rgba(250, 204, 21, 0.28); color: #fde047; }
-        .bg-tube { background: rgba(52, 211, 153, 0.28); color: #6ee7b7; }
-        .bg-supermarket { background: rgba(251, 146, 60, 0.28); color: #fdba74; }
-        .bg-assembly { background: rgba(59, 130, 246, 0.28); color: #93c5fd; }
-        .bg-packing { background: rgba(244, 114, 182, 0.28); color: #f9a8d4; }
-        .bg-tech { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+        .bg-laser { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
+        .bg-finished { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
+        .bg-welding { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important; }
+        .bg-polishing { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important; }
+        .bg-tube { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
+        .bg-supermarket { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
+        .bg-assembly { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important; }
+        .bg-packing { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
+        .bg-tech { background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%); color: #ffffff; backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); outline: 2px solid rgba(245, 245, 245, 0.6) !important; outline-offset: -2px !important; border-radius: 1.5rem !important; }
         .bg-washlab { 
-            background: rgba(30, 41, 59, 0.75);
-            border-color: rgba(59, 130, 246, 0.5);
+            background: linear-gradient(90deg,rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0.54) 100%);
+            border-color: rgba(245, 245, 245, 0.6);
             color: white;
             font-style: italic;
         }
 
         .bg-kaizen {
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
+            background: rgba(255, 255, 255, 1);
+            color: #070000;
             border-bottom: 5px solid #22c55e !important;
         }
 
@@ -416,6 +417,15 @@
             grid-template-columns: 1fr 1fr 94px 1.04fr 0.7fr;
             gap: 0;
         }
+
+        .glass-container {
+            background: radial-gradient(circle,rgba(1, 44, 74, 0.75) 0%, rgb(1, 1, 1,0.95) 100%);
+            backdrop-filter: blur(30px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 4rem;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
     </style>
 
     <script type="text/babel">
@@ -425,8 +435,8 @@
 
 
         const FactoryLayout = () => (
-            <div className="w-full h-full overflow-x-auto">
-                <div className="factory-grid min-w-[1000px]">
+            <div className="w-full h-full overflow-hidden flex">
+                <div className="factory-grid">
                     <div className="zone bg-laser" style={{gridRow: '1 / span 3', gridColumn: '1'}}>Laser Stock</div>
                     <div className="zone bg-finished" style={{gridRow: '4 / span 3', gridColumn: '1'}}>Finished Product</div>
 
@@ -455,7 +465,7 @@
                         <div className="zone bg-kaizen p-0">
                             <span className="vertical-text font-bold text-lg">改善</span>
                         </div>
-                        <div className="zone" style={{background: 'rgba(255,255,255,0.12)', padding: '2px 24px'}}>
+                        <div className="zone" style={{background: 'rgba(254, 254, 254, 1)', padding: '2px 24px'}}>
                             <img src="https://static.wixstatic.com/media/a6967f_07f6e296aaa64507bb9d14997649eaeb~mv2.png" 
                                  className="h-8 w-full object-contain brightness-125"/>
                         </div>
@@ -1041,7 +1051,9 @@
 
                         </div>
 
-
+                        <div className="flex-1 flex justify-center">
+                            <img src="https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png" alt="Factory Logo" className="h-12 md:h-16 w-auto object-contain" />
+                        </div>
 
                         <div className="flex items-center gap-3">
 
@@ -1183,7 +1195,7 @@
 
                                         onClick={handleMapClick}
 
-                                        className={`relative bg-white rounded-[2rem] md:rounded-[4rem] shadow-2xl border-[8px] md:border-[16px] border-white ring-1 ring-slate-200 animate-in zoom-in-95 w-full md:w-full md:h-[90%] md:flex md:items-center md:justify-center ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
+                                        className={`glass-container animate-in zoom-in-95 w-full md:w-full md:flex md:items-center md:justify-center md:p-12 ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
 
                                     >
 
