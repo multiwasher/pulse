@@ -16,6 +16,8 @@
 
     <link rel="apple-touch-icon" href="https://static.wixstatic.com/media/a6967f_874354ad69c5461eafd229ab23540233~mv2.png">
 
+    <link rel="icon" type="image/svg+xml" href="public/favicon.svg">
+
     <title>Factory Station Maintenance</title>
 
     <link rel="manifest" href="manifest.json">
@@ -736,25 +738,37 @@
 
                 const pointsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'config_points');
 
-                const logsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'history_logs');
-
-
-
                 const unsubPoints = methods.onSnapshot(pointsRef, (snap) => {
 
                     setPoints(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
+                }, (error) => {
+
+                    console.error("Error reading config_points:", error.code, error.message);
+
                 });
+
+                const logsRef = methods.collection(db, 'artifacts', appId, 'public', 'data', 'history_logs');
 
                 const unsubLogs = methods.onSnapshot(logsRef, (snap) => {
 
                     setHistoryLogs(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
+                }, (error) => {
+
+                    console.error("Error reading history_logs:", error.code, error.message);
+
                 });
 
-                return () => { unsubPoints(); unsubLogs(); };
+                return () => { 
 
-            }, [isReady, user, isAdmin]);
+                    unsubPoints(); 
+
+                    unsubLogs(); 
+
+                };
+
+            }, [isReady, user]);
 
 
 
@@ -1170,12 +1184,6 @@
 
                                 <div className="space-y-10 animate-in fade-in duration-500">
 
-                                    <div className="flex justify-end mb-4">
-
-                                        <button onClick={() => window.location.reload()} className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all">Refresh Data</button>
-
-                                    </div>
-
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                                         <div className={`${getPerformanceColor(parseFloat(stats.avg)).bg} text-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] shadow-xl relative overflow-hidden`}>
@@ -1424,27 +1432,45 @@
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-8 mb-4 md:mb-10 w-full max-w-4xl">
 
-                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'sad'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-2 md:gap-6 p-2 md:p-10 rounded-2xl md:rounded-3xl bg-white border-2 md:border-4 border-transparent hover:border-red-500 hover:bg-red-50 transition-all active:scale-95 shadow-xl">
+                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'sad'}); setActiveEval(null); }} className="group flex flex-col items-center gap-4 p-4 md:p-10 rounded-2xl md:rounded-3xl bg-white border-2 md:border-4 border-transparent hover:border-red-500 hover:bg-red-50 transition-all active:scale-95 shadow-xl">
 
-                                        <SmileyFace type="sad" className="w-10 h-10 md:w-40 md:h-40 text-red-500 flex-shrink-0" />
-
-                                        <span className="font-black text-xs md:text-2xl uppercase text-red-600">CRITICAL</span>
-
-                                    </button>
-
-                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'neutral'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-2 md:gap-6 p-2 md:p-10 rounded-2xl md:rounded-3xl bg-white border-2 md:border-4 border-transparent hover:border-yellow-500 hover:bg-yellow-50 transition-all active:scale-95 shadow-xl">
-
-                                        <SmileyFace type="neutral" className="w-10 h-10 md:w-40 md:h-40 text-yellow-500 flex-shrink-0" />
-
-                                        <span className="font-black text-xs md:text-xl uppercase text-yellow-600 text-center">ACCEPTABLE</span>
+                                        <div className="flex flex-col items-center gap-2 md:gap-6">
+                                            <SmileyFace type="sad" className="w-10 h-10 md:w-40 md:h-40 text-red-500 flex-shrink-0" />
+                                            <span className="font-black text-xs md:text-2xl uppercase text-red-600">CRITICAL</span>
+                                        </div>
+                                        <ul className="text-xs md:text-sm text-slate-700 text-left space-y-1 border-t-2 border-red-200 pt-3 w-full">
+                                            <li>• Equipamentos bloqueiam corredor de segurança</li>
+                                            <li>• Risco imediato para pessoas e operações</li>
+                                            <li>• Espaço completamente desorganizado/sujo</li>
+                                        </ul>
 
                                     </button>
 
-                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'happy'}); setActiveEval(null); }} className="group flex flex-row md:flex-col items-center gap-2 md:gap-6 p-2 md:p-10 rounded-2xl md:rounded-3xl bg-white border-2 md:border-4 border-transparent hover:border-green-500 hover:bg-green-50 transition-all active:scale-95 shadow-xl">
+                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'neutral'}); setActiveEval(null); }} className="group flex flex-col items-center gap-4 p-4 md:p-10 rounded-2xl md:rounded-3xl bg-white border-2 md:border-4 border-transparent hover:border-yellow-500 hover:bg-yellow-50 transition-all active:scale-95 shadow-xl">
 
-                                        <SmileyFace type="happy" className="w-10 h-10 md:w-40 md:h-40 text-green-500 flex-shrink-0" />
+                                        <div className="flex flex-col items-center gap-2 md:gap-6">
+                                            <SmileyFace type="neutral" className="w-10 h-10 md:w-40 md:h-40 text-yellow-500 flex-shrink-0" />
+                                            <span className="font-black text-xs md:text-xl uppercase text-yellow-600 text-center">ACCEPTABLE</span>
+                                        </div>
+                                        <ul className="text-xs md:text-sm text-slate-700 text-left space-y-1 border-t-2 border-yellow-200 pt-3 w-full">
+                                            <li>• Equipamentos deslocados mas dentro do posto</li>
+                                            <li>• Sem bloqueio de passagens ou riscos</li>
+                                            <li>• Organização e limpeza podem melhorar</li>
+                                        </ul>
 
-                                        <span className="font-black text-xs md:text-2xl uppercase text-green-600">EXCELLENT</span>
+                                    </button>
+
+                                    <button onClick={() => { setPendingEvaluations({...pendingEvaluations, [activeEval.id]: 'happy'}); setActiveEval(null); }} className="group flex flex-col items-center gap-4 p-4 md:p-10 rounded-2xl md:rounded-3xl bg-white border-2 md:border-4 border-transparent hover:border-green-500 hover:bg-green-50 transition-all active:scale-95 shadow-xl">
+
+                                        <div className="flex flex-col items-center gap-2 md:gap-6">
+                                            <SmileyFace type="happy" className="w-10 h-10 md:w-40 md:h-40 text-green-500 flex-shrink-0" />
+                                            <span className="font-black text-xs md:text-2xl uppercase text-green-600">EXCELLENT</span>
+                                        </div>
+                                        <ul className="text-xs md:text-sm text-slate-700 text-left space-y-1 border-t-2 border-green-200 pt-3 w-full">
+                                            <li>• Equipamentos no seu respetivo local</li>
+                                            <li>• Segurança garantida, sem riscos</li>
+                                            <li>• Organização e limpeza em perfeito estado</li>
+                                        </ul>
 
                                     </button>
 
