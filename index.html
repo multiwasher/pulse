@@ -906,11 +906,15 @@
 
                     const logTime = log.timestamp?.seconds || 0;
 
-                    return logTime >= minTime;
+                    const timeMatch = logTime >= minTime;
+
+                    const typeMatch = analysisType === 'all' || log.type === analysisType;
+
+                    return timeMatch && typeMatch;
 
                 });
 
-            }, [historyLogs, getTimeRangeFilter]);
+            }, [historyLogs, getTimeRangeFilter, analysisType]);
 
 
 
@@ -996,7 +1000,7 @@
 
                         const newLogRef = methods.doc(logsRef);
 
-                        batch.set(newLogRef, { pointId: id, status, score: POINT_VALUES[status], timestamp: methods.serverTimestamp() });
+                        batch.set(newLogRef, { pointId: id, status, score: POINT_VALUES[status], timestamp: methods.serverTimestamp(), type: evaluationType });
 
                     }
 
