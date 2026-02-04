@@ -1444,13 +1444,44 @@
                                         <button onClick={() => setEvaluationType('external')} className={`px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-base transition-all ${evaluationType === 'external' ? 'bg-purple-500 text-white shadow-lg' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`}>EXTERNA</button>
                                     </div>
 
+                                    {/* MOBILE LIST VIEW */}
+                                    <div className="md:hidden space-y-3">
+                                        {points.map(pt => {
+                                            const pendingStatus = pendingEvaluations[pt.id];
+                                            const displayStatus = (isAdmin && adminMode === 'dashboard') ? currentStatusMap[pt.id] : pendingStatus;
+                                            const isPending = !!pendingStatus;
+
+                                            const statusColor = !displayStatus ? 'bg-slate-100 text-slate-400' : 
+                                                              displayStatus === 'happy' ? 'bg-green-500 text-white' :
+                                                              displayStatus === 'neutral' ? 'bg-yellow-500 text-white' :
+                                                              'bg-red-500 text-white';
+
+                                            return (
+                                                <button
+                                                    key={pt.id}
+                                                    onClick={() => setActiveEval(pt)}
+                                                    className={`w-full p-4 rounded-2xl flex items-center justify-between font-bold text-left transition-all ${isPending ? 'ring-2 ring-indigo-500' : ''} ${statusColor}`}
+                                                >
+                                                    <span className="text-sm md:text-base">{pt.name}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        {displayStatus === 'happy' && <span>😊</span>}
+                                                        {displayStatus === 'neutral' && <span>😐</span>}
+                                                        {displayStatus === 'sad' && <span>😞</span>}
+                                                        {!displayStatus && <span className="text-xs opacity-50">Pendente</span>}
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* DESKTOP MAP VIEW */}
                                     <div
 
                                         ref={mapContainerRef}
 
                                         onClick={handleMapClick}
 
-                                        className={`glass-container animate-in zoom-in-95 w-full md:w-full lg:h-[calc(100vh-180px)] md:flex md:items-center md:justify-center md:p-12 ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
+                                        className={`hidden md:flex glass-container animate-in zoom-in-95 w-full md:w-full lg:h-[calc(100vh-180px)] md:items-center md:justify-center md:p-12 ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
 
                                     >
 
