@@ -664,11 +664,11 @@
 
             const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);            
 
-            // Edit Point States
+            const [evaluationType, setEvaluationType] = useState('internal'); // internal | external
 
-            const [showPointModal, setShowPointModal] = useState(null);
+            const [analysisTimeRange, setAnalysisTimeRange] = useState('7days'); // 7days | 30days | 90days | all
 
-            const [editPointName, setEditPointName] = useState("");
+            const [analysisType, setAnalysisType] = useState('internal'); // internal | external | all
 
             const mapContainerRef = useRef(null);
 
@@ -872,13 +872,73 @@
 
 
 
+            const getTimeRangeFilter = useCallback(() => {
+
+                const now = Date.now() / 1000;
+
+                const ranges = {
+
+                    '7days': now - (7 * 24 * 60 * 60),
+
+                    '30days': now - (30 * 24 * 60 * 60),
+
+                    '90days': now - (90 * 24 * 60 * 60),
+
+                    'all': 0
+
+                };
+
+                return ranges[analysisTimeRange] || 0;
+
+            }, [analysisTimeRange]);
+
+
+
+            const filteredHistoryLogs = useMemo(() => {
+
+                const minTime = getTimeRangeFilter();
+
+                return historyLogs.filter(log => {
+
+                    const logTime = log.timestamp?.seconds || 0;
+
+                    return logTime >= minTime;
+
+                });
+
+            }, [historyLogs, getTimeRangeFilter]);
+
+
+
+            const timeSeriesData = useMemo(() => {
+
+                const grouped = {};
+
+                filteredHistoryLogs.forEach(log => {
+
+                    const date = new Date((log.timestamp?.seconds || 0) * 1000).toLocaleDateString('pt-PT');
+
+                    if (!grouped[date]) grouped[date] = { date, sad: 0, neutral: 0, happy: 0, total: 0 };
+
+                    grouped[date][log.status]++;
+
+                    grouped[date].total++;
+
+                });
+
+                return Object.values(grouped).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            }, [filteredHistoryLogs]);
+
+
+
             const stats = useMemo(() => {
 
                 const s = {};
 
                 points.forEach(p => s[p.id] = { name: p.name, score: 0, count: 0 });
 
-                historyLogs.forEach(log => { if (s[log.pointId]) { s[log.pointId].score += log.score; s[log.pointId].count++; } });
+                filteredHistoryLogs.forEach(log => { if (s[log.pointId]) { s[log.pointId].score += log.score; s[log.pointId].count++; } });
 
                 const list = Object.values(s).filter(x => x.count > 0).map(st => ({ ...st, performance: (st.score / (st.count * 3)) * 100 }));
 
@@ -888,7 +948,7 @@
 
                 return { list: list.sort((a,b) => b.performance - a.performance), avg: totalPotential > 0 ? ((totalScore / totalPotential) * 100).toFixed(1) : "0", total: list.reduce((a, b) => a + b.count, 0) };
 
-            }, [points, historyLogs]);
+            }, [points, filteredHistoryLogs]);
 
 
 
@@ -1184,6 +1244,20 @@
 
                                 <div className="space-y-10 animate-in fade-in duration-500">
 
+                                    <div className="flex flex-col md:flex-row gap-4 md:gap-3 items-start md:items-center mb-4 flex-wrap">
+                                        <div className="flex gap-2">
+                                            <button onClick={() => setAnalysisTimeRange('7days')} className={`px-3 md:px-4 py-2 rounded-lg text-xs font-bold transition-all ${analysisTimeRange === '7days' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>7 DIAS</button>
+                                            <button onClick={() => setAnalysisTimeRange('30days')} className={`px-3 md:px-4 py-2 rounded-lg text-xs font-bold transition-all ${analysisTimeRange === '30days' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>30 DIAS</button>
+                                            <button onClick={() => setAnalysisTimeRange('90days')} className={`px-3 md:px-4 py-2 rounded-lg text-xs font-bold transition-all ${analysisTimeRange === '90days' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>90 DIAS</button>
+                                            <button onClick={() => setAnalysisTimeRange('all')} className={`px-3 md:px-4 py-2 rounded-lg text-xs font-bold transition-all ${analysisTimeRange === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>TUDO</button>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => setAnalysisType('internal')} className={`px-3 md:px-4 py-2 rounded-lg text-xs font-bold transition-all ${analysisType === 'internal' ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>INTERNA</button>
+                                            <button onClick={() => setAnalysisType('external')} className={`px-3 md:px-4 py-2 rounded-lg text-xs font-bold transition-all ${analysisType === 'external' ? 'bg-purple-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>EXTERNA</button>
+                                            <button onClick={() => setAnalysisType('all')} className={`px-3 md:px-4 py-2 rounded-lg text-xs font-bold transition-all ${analysisType === 'all' ? 'bg-slate-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>AMBAS</button>
+                                        </div>
+                                    </div>
+
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                                         <div className={`${getPerformanceColor(parseFloat(stats.avg)).bg} text-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] shadow-xl relative overflow-hidden`}>
@@ -1212,7 +1286,32 @@
 
                                     </div>
 
-                                    
+                                    <div className="bg-white border-2 border-slate-100 rounded-[3rem] p-6 md:p-10 shadow-sm">
+                                        <h3 className="text-xl md:text-2xl font-black uppercase mb-6 px-4">Evaluations Over Time</h3>
+                                        <div className="overflow-x-auto px-2 md:px-4">
+                                            <div className="flex items-end justify-between gap-2 h-40 min-w-max md:min-w-0">
+                                                {timeSeriesData.length > 0 ? timeSeriesData.map((d, i) => (
+                                                    <div key={i} className="flex flex-col items-center gap-2 flex-shrink-0 md:flex-1">
+                                                        <div className="relative h-32 w-8 md:w-full bg-slate-50 rounded-lg overflow-hidden flex items-end justify-center group">
+                                                            <div className="absolute inset-0 flex flex-col-reverse">
+                                                                {d.happy > 0 && <div className="bg-green-500 flex-1" style={{flex: `${d.happy}/${d.total}`}}></div>}
+                                                                {d.neutral > 0 && <div className="bg-yellow-500 flex-1" style={{flex: `${d.neutral}/${d.total}`}}></div>}
+                                                                {d.sad > 0 && <div className="bg-red-500 flex-1" style={{flex: `${d.sad}/${d.total}`}}></div>}
+                                                            </div>
+                                                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none rounded-lg"></div>
+                                                        </div>
+                                                        <span className="text-[10px] md:text-xs font-bold text-slate-600 text-center whitespace-nowrap">{d.date}</span>
+                                                        <span className="text-[9px] md:text-xs text-slate-500">{d.total}</span>
+                                                    </div>
+                                                )) : <p className="text-slate-400 text-center w-full">Sem dados neste período</p>}
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-4 mt-6 px-4 justify-center flex-wrap">
+                                            <div className="flex items-center gap-2"><div className="w-4 h-4 bg-green-500 rounded"></div><span className="text-sm font-bold text-slate-600">Excelente</span></div>
+                                            <div className="flex items-center gap-2"><div className="w-4 h-4 bg-yellow-500 rounded"></div><span className="text-sm font-bold text-slate-600">Aceitável</span></div>
+                                            <div className="flex items-center gap-2"><div className="w-4 h-4 bg-red-500 rounded"></div><span className="text-sm font-bold text-slate-600">Crítico</span></div>
+                                        </div>
+                                    </div>
 
                                     <div className="bg-white border-2 border-slate-100 rounded-[3rem] p-6 md:p-10 shadow-sm">
 
@@ -1230,7 +1329,10 @@
 
                                                         <div className="flex justify-between items-center mb-4">
 
-                                                            <h5 className="text-lg font-black uppercase tracking-tight">{s.name}</h5>
+                                                            <div className="flex flex-col">
+                                                                <h5 className="text-lg font-black uppercase tracking-tight">{s.name}</h5>
+                                                                <p className="text-xs text-slate-500 font-bold mt-1">{s.count} avaliações</p>
+                                                            </div>
 
                                                             <span className={`font-bold ${colors.text}`}>{s.performance.toFixed(1)}%</span>
 
@@ -1270,6 +1372,11 @@
 
                                     <div className="flex justify-center mb-6 md:hidden">
                                         <img src="https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png" alt="Factory Logo" className="max-w-[80%] h-auto object-contain" />
+                                    </div>
+
+                                    <div className="flex gap-2 md:gap-4 mb-4 justify-center md:justify-start md:pl-4">
+                                        <button onClick={() => setEvaluationType('internal')} className={`px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-base transition-all ${evaluationType === 'internal' ? 'bg-blue-500 text-white shadow-lg' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`}>INTERNA</button>
+                                        <button onClick={() => setEvaluationType('external')} className={`px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-base transition-all ${evaluationType === 'external' ? 'bg-purple-500 text-white shadow-lg' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`}>EXTERNA</button>
                                     </div>
 
                                     <div
