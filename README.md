@@ -94,7 +94,7 @@ const firebaseConfig = {
 
 ## Login Administrador
 
-- **Usuário**: `GESTÃO`
+- **Usuário**: `Gestão`
 - **Senha**: `789`
 
 ## Deploy

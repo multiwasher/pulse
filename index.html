@@ -1512,14 +1512,12 @@
 
                                 <form onSubmit={async (e) => {
                                         e.preventDefault();
-                                        const { auth, methods } = window.FB;
                                         
-                                        try {
-                                            await methods.signInWithEmailAndPassword(auth, loginForm.user, loginForm.pass);
+                                        // Check hardcoded credentials
+                                        if (loginForm.user === "Gestão" && loginForm.pass === "789") {
                                             setIsAdmin(true);
                                             setShowLoginModal(false);
-                                        } catch (error) {
-                                            console.error("Erro de acesso:", error.code);
+                                        } else {
                                             alert("Acesso Negado: Utilizador ou Password de Gestão incorretos.");
                                         }
                                     }} className="space-y-6">
