@@ -1446,21 +1446,47 @@
 
                                     {/* MOBILE LIST VIEW */}
                                     <div className="md:hidden space-y-3">
-                                        {points.map(pt => {
+                                        {points.map((pt, idx) => {
                                             const pendingStatus = pendingEvaluations[pt.id];
                                             const displayStatus = (isAdmin && adminMode === 'dashboard') ? currentStatusMap[pt.id] : pendingStatus;
                                             const isPending = !!pendingStatus;
 
-                                            const statusColor = !displayStatus ? 'bg-slate-100 text-slate-400' : 
-                                                              displayStatus === 'happy' ? 'bg-green-500 text-white' :
-                                                              displayStatus === 'neutral' ? 'bg-yellow-500 text-white' :
-                                                              'bg-red-500 text-white';
+                                            // Minimalista color palette - different for each station
+                                            const stationColors = [
+                                                { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-900', accent: 'bg-blue-100' },
+                                                { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-900', accent: 'bg-purple-100' },
+                                                { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-900', accent: 'bg-pink-100' },
+                                                { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-900', accent: 'bg-amber-100' },
+                                                { bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-900', accent: 'bg-teal-100' },
+                                                { bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-900', accent: 'bg-cyan-100' },
+                                                { bg: 'bg-lime-50', border: 'border-lime-200', text: 'text-lime-900', accent: 'bg-lime-100' },
+                                                { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-900', accent: 'bg-rose-100' },
+                                                { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-900', accent: 'bg-indigo-100' },
+                                                { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-900', accent: 'bg-orange-100' },
+                                            ];
+
+                                            const colors = stationColors[idx % stationColors.length];
+
+                                            const statusBg = !displayStatus ? colors.bg : 
+                                                            displayStatus === 'happy' ? 'bg-green-50' :
+                                                            displayStatus === 'neutral' ? 'bg-yellow-50' :
+                                                            'bg-red-50';
+
+                                            const statusText = !displayStatus ? colors.text : 
+                                                              displayStatus === 'happy' ? 'text-green-900' :
+                                                              displayStatus === 'neutral' ? 'text-yellow-900' :
+                                                              'text-red-900';
+
+                                            const statusBorder = !displayStatus ? colors.border : 
+                                                                displayStatus === 'happy' ? 'border-green-200' :
+                                                                displayStatus === 'neutral' ? 'border-yellow-200' :
+                                                                'border-red-200';
 
                                             return (
                                                 <button
                                                     key={pt.id}
                                                     onClick={() => setActiveEval(pt)}
-                                                    className={`w-full p-4 rounded-2xl flex items-center justify-between font-bold text-left transition-all ${isPending ? 'ring-2 ring-indigo-500' : ''} ${statusColor}`}
+                                                    className={`w-full p-4 rounded-2xl flex items-center justify-between font-bold text-left transition-all border-2 ${statusBg} ${statusText} ${statusBorder} ${isPending ? 'ring-2 ring-indigo-500' : ''}`}
                                                 >
                                                     <span className="text-sm md:text-base">{pt.name}</span>
                                                     <div className="flex items-center gap-2">
