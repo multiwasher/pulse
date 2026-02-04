@@ -565,31 +565,91 @@
         const FactoryLayout = () => (
             <div className="w-full h-full overflow-hidden flex">
                 <div className="factory-grid">
-                    <div className="zone bg-laser" style={{gridRow: '1 / span 3', gridColumn: '1'}}>Laser Stock</div>
-                    <div className="zone bg-finished" style={{gridRow: '4 / span 3', gridColumn: '1'}}>Finished Product</div>
+                    <div className="zone bg-laser" style={{gridRow: '1 / span 3', gridColumn: '1'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Laser />
+                            <span>Laser Stock</span>
+                        </div>
+                    </div>
+                    <div className="zone bg-finished" style={{gridRow: '4 / span 3', gridColumn: '1'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Flag />
+                            <span>Finished Product</span>
+                        </div>
+                    </div>
 
                     <div className="walkway walkway-v" style={{gridRow: '1 / span 6', gridColumn: '2'}}></div>
 
-                    <div className="zone bg-welding" style={{gridRow: '1', gridColumn: '3 / span 3'}}>Welding</div>
-                    <div className="zone bg-polishing" style={{gridRow: '1', gridColumn: '6 / span 2'}}>Polishing</div>
+                    <div className="zone bg-welding" style={{gridRow: '1', gridColumn: '3 / span 3'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Lightning />
+                            <span>Welding</span>
+                        </div>
+                    </div>
+                    <div className="zone bg-polishing" style={{gridRow: '1', gridColumn: '6 / span 2'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Sparkle />
+                            <span>Polishing</span>
+                        </div>
+                    </div>
 
                     <div className="walkway walkway-h" style={{gridRow: '2', gridColumn: '3 / span 5'}}></div>
 
-                    <div className="zone bg-tube" style={{gridRow: '3', gridColumn: '3'}}>Tube Cutting</div>
-                    <div className="zone bg-supermarket" style={{gridRow: '3', gridColumn: '4'}}>Supermarket</div>
-                    <div className="zone bg-assembly" style={{gridRow: '4', gridColumn: '3 / span 2'}}>Assembly</div>
+                    <div className="zone bg-tube" style={{gridRow: '3', gridColumn: '3'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Scissors />
+                            <span>Tube Cutting</span>
+                        </div>
+                    </div>
+                    <div className="zone bg-supermarket" style={{gridRow: '3', gridColumn: '4'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Package />
+                            <span>Supermarket</span>
+                        </div>
+                    </div>
+                    <div className="zone bg-assembly" style={{gridRow: '4', gridColumn: '3 / span 2'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Wrench />
+                            <span>Assembly</span>
+                        </div>
+                    </div>
 
                     <div className="walkway walkway-v" style={{gridRow: '3 / 5', gridColumn: '5'}}></div>
 
-                    <div className="zone bg-supermarket" style={{gridRow: '3', gridColumn: '6 / span 2'}}>Supermarket</div>
-                    <div className="zone bg-assembly" style={{gridRow: '4', gridColumn: '6'}}>Assembly</div>
-                    <div className="zone bg-tech" style={{gridRow: '4', gridColumn: '7'}}>Tech Support</div>
+                    <div className="zone bg-supermarket" style={{gridRow: '3', gridColumn: '6 / span 2'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Package />
+                            <span>Supermarket</span>
+                        </div>
+                    </div>
+                    <div className="zone bg-assembly" style={{gridRow: '4', gridColumn: '6'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Wrench />
+                            <span>Assembly</span>
+                        </div>
+                    </div>
+                    <div className="zone bg-tech" style={{gridRow: '4', gridColumn: '7'}}>
+                        <div className="flex flex-col items-center gap-2 text-white">
+                            <Icons.Users />
+                            <span>Tech Support</span>
+                        </div>
+                    </div>
 
                     <div className="walkway walkway-h" style={{gridRow: '5', gridColumn: '3 / span 5'}}></div>
 
                     <div className="bottom-row-container">
-                        <div className="zone bg-packing">Packing</div>
-                        <div className="zone bg-pre-assembly">Pre-Assembly</div>
+                        <div className="zone bg-packing">
+                            <div className="flex flex-col items-center gap-2 text-white">
+                                <Icons.OpenBox />
+                                <span>Packing</span>
+                            </div>
+                        </div>
+                        <div className="zone bg-pre-assembly">
+                            <div className="flex flex-col items-center gap-2 text-white">
+                                <Icons.Wrench />
+                                <span>Pre-Assembly</span>
+                            </div>
+                        </div>
                         <div className="zone bg-kaizen p-0">
                             <span className="vertical-text font-bold text-lg">改善</span>
                         </div>
@@ -597,7 +657,12 @@
                             <img src="https://static.wixstatic.com/media/a6967f_07f6e296aaa64507bb9d14997649eaeb~mv2.png" 
                                  className="h-8 w-full object-contain brightness-125"/>
                         </div>
-                        <div className="zone bg-washlab">Washlab</div>
+                        <div className="zone bg-washlab">
+                            <div className="flex flex-col items-center gap-2 text-white">
+                                <Icons.Droplet />
+                                <span>Washlab</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -659,8 +724,72 @@
 
             Send: () => <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>,
 
-            X: ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            X: ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
 
+            Wrench: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 1 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>,
+
+            Scissors: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="15.5" y1="5.5" x2="20" y2="10"></line></svg>,
+
+            Package: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21" /><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>,
+
+            BarChart: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="2" x2="12" y2="22"></line><path d="M17 5H9.5a1.5 1.5 0 0 0-1.5 1.5v12a1.5 1.5 0 0 0 1.5 1.5H17"></path><path d="M5 12H2.5a1.5 1.5 0 0 1-1.5-1.5V5.5A1.5 1.5 0 0 1 2.5 4H5" /></svg>,
+
+            Users: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>,
+
+            Droplet: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>,
+
+            Lightning: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="currentColor"/></svg>,
+
+            Sparkle: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 10.26 24 12 15.09 13.74 12 22 8.91 13.74 0 12 8.91 10.26 12 2"></polygon></svg>,
+
+            Laser: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 20 12 12 22 4 12"></polygon></svg>,
+
+            Flag: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polyline points="4 2 4 20" stroke="currentColor" strokeWidth="2" fill="none"></polyline><rect x="4" y="4" width="10" height="8" fill="currentColor" stroke="none"></rect><rect x="9" y="4" width="5" height="4" fill="white" stroke="none"></rect><rect x="4" y="8" width="5" height="4" fill="white" stroke="none"></rect></svg>,
+
+            OpenBox: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"></path><path d="M3 9l3-4h12l3 4"></path><line x1="8" y1="9" x2="8" y2="19"></line><line x1="16" y1="9" x2="16" y2="19"></line></svg>
+
+        };
+
+        const getStationIcon = (stationName) => {
+            const name = stationName.toLowerCase().trim();
+            
+            // Direct matches (English and Portuguese)
+            const iconMap = {
+                'laser stock': Icons.Laser,
+                'finished product': Icons.Flag,
+                'welding': Icons.Lightning,
+                'polishing': Icons.Sparkle,
+                'tube cutting': Icons.Scissors,
+                'supermarket': Icons.Package,
+                'assembly': Icons.Wrench,
+                'tech support': Icons.Users,
+                'packing': Icons.OpenBox,
+                'pre-assembly': Icons.Wrench,
+                'washlab': Icons.Droplet,
+                'logística': Icons.Package,
+                'soldadura': Icons.Lightning,
+                'acabamento': Icons.Sparkle,
+                'montagem': Icons.Wrench,
+                'corte': Icons.Scissors,
+                'supermercado': Icons.Package
+            };
+            
+            // Check direct match first
+            if (iconMap[name]) return iconMap[name];
+            
+            // Fallback to partial matches
+            if (name.includes('laser')) return Icons.Laser;
+            if (name.includes('finished') || name.includes('product')) return Icons.Flag;
+            if (name.includes('weld') || name.includes('soldad')) return Icons.Lightning;
+            if (name.includes('polish') || name.includes('shine') || name.includes('acabam')) return Icons.Sparkle;
+            if (name.includes('tube') || name.includes('cut') || name.includes('corte')) return Icons.Scissors;
+            if (name.includes('supermarket') || name.includes('stock') || name.includes('supermercado') || name.includes('logís')) return Icons.Package;
+            if (name.includes('assemb') || name.includes('montag')) return Icons.Wrench;
+            if (name.includes('tech') || name.includes('support')) return Icons.Users;
+            if (name.includes('pack')) return Icons.OpenBox;
+            if (name.includes('wash') || name.includes('water')) return Icons.Droplet;
+            
+            return null;
         };
 
 
@@ -1486,6 +1615,8 @@
                                                               displayStatus === 'neutral' ? 'shadow-lg shadow-yellow-500/50' :
                                                               'shadow-lg shadow-red-500/50';
 
+                                            const StationIcon = getStationIcon(pt.name);
+
                                             return (
                                                 <button
                                                     key={pt.id}
@@ -1493,7 +1624,10 @@
                                                     className={`liquid-glass w-full p-4 rounded-2xl flex items-center justify-between font-bold text-left border-2 ${statusText} ${statusBorder} ${statusGlow} ${isPending ? 'ring-2 ring-cyan-400/70' : ''}`}
                                                     style={{background: 'rgba(0, 0, 0, 0.7)'}}
                                                 >
-                                                    <span className="text-sm md:text-base">{pt.name}</span>
+                                                    <div className="flex items-center gap-3">
+                                                        {StationIcon && <StationIcon />}
+                                                        <span className="text-sm md:text-base">{pt.name}</span>
+                                                    </div>
                                                     <div className="flex items-center gap-2">
                                                         {displayStatus === 'happy' && <span>😊</span>}
                                                         {displayStatus === 'neutral' && <span>😐</span>}
