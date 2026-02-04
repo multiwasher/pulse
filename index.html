@@ -463,8 +463,8 @@
         
 
         .bg-kaizen {
-            background: rgba(255, 255, 255, 1);
-            color: #070000;
+            background: linear-gradient(0deg, #1f2937 0%, #374151 100%);
+            color: #ffffff;
             border-left: 5px solid #22c55e !important;
         }
 
@@ -538,6 +538,21 @@
             background: radial-gradient(circle at center, rgba(81, 184, 234, 1) 0%, rgba(0, 0, 0, 1) 100%);
             background-attachment: fixed;
             min-height: 100vh;
+        }
+
+        /* Hide scrollbar while maintaining scroll functionality */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Firefox */
+        * {
+            scrollbar-width: none;
+        }
+
+        html, body, main {
+            overflow-y: auto;
+            -ms-overflow-style: none;
         }
     </style>
 
@@ -823,39 +838,8 @@
 
 
             const startNewRound = () => {
-
                 setPendingEvaluations({});
-
-                // Show loading GIF on mobile
-
-                if (window.innerWidth < 768) {
-
-                    setShowLayoutGif(true);
-
-                    setGifFadingOut(false);
-
-                    // Let GIF animate and pause for 3.5s, then fade out for 1.5s
-
-                    setTimeout(() => {
-
-                        setGifFadingOut(true);
-
-                    }, 3500);
-
-                    setTimeout(() => {
-
-                        setShowLayoutGif(false);
-
-                        setView('app');
-
-                    }, 5000);
-
-                } else {
-
-                    setView('app');
-
-                }
-
+                setView('app');
             };
 
 
@@ -1174,26 +1158,6 @@
 
                     <div className={`relative min-h-screen overflow-hidden ${isLandscape && window.innerWidth < 768 ? 'overflow-y-auto' : ''}`}>
 
-                        {/* Loading GIF overlay on mobile */}
-
-                        {showLayoutGif && (
-
-                            <div className="fixed inset-0 z-[300] flex items-center justify-center bg-white pointer-events-none animate-in fade-in duration-300">
-
-                                <img
-
-                                    src="https://static.wixstatic.com/media/a6967f_9142290f38c8426c98c49711bd0b7974~mv2.gif"
-
-                                    alt="Loading"
-
-                                    className={gifFadingOut ? "w-4/5 h-4/5 object-contain gif-fade-out" : "w-4/5 h-4/5 object-contain gif-no-loop"}
-
-                                />
-
-                            </div>
-
-                        )}
-
                         <div onClick={startNewRound} className="min-h-screen bg-white flex flex-col items-center justify-center cursor-pointer relative overflow-hidden">
 
                             <div className="absolute top-4 md:top-8 left-1/2 transform -translate-x-1/2 md:left-8 md:transform-none z-10 w-[90%] md:w-auto"><img src={CORNER_LOGO} className="w-full md:w-[286px] h-auto" /></div>
@@ -1222,7 +1186,7 @@
 
             return (
 
-                <div className={`min-h-screen flex flex-col bg-white font-sans text-slate-900 select-none ${isLandscape && window.innerWidth < 932 ? 'h-auto overflow-y-auto' : 'h-screen md:overflow-hidden'} overflow-y-auto`}>
+                <div className={`min-h-screen flex flex-col bg-slate-50 md:bg-white font-sans text-slate-900 select-none ${isLandscape && window.innerWidth < 932 ? 'h-auto overflow-y-auto' : 'h-screen md:overflow-hidden'} overflow-y-auto`}>
 
                     {/* NAVBAR */}
 
@@ -1470,11 +1434,11 @@
 
                                     )}
 
-                                    <div className="flex justify-center mb-6 md:hidden">
+                                    <div className="flex justify-center mb-10 md:hidden">
                                         <img src="https://static.wixstatic.com/media/a6967f_eee0d017524f4a48bf2870cc2385c10b~mv2.png" alt="Factory Logo" className="max-w-[80%] h-auto object-contain" />
                                     </div>
 
-                                    <div className="flex gap-2 md:gap-4 mb-4 justify-center md:justify-start md:pl-4">
+                                    <div className="flex gap-[29px] md:gap-4 mb-4 md:mb-2 justify-center md:justify-start md:pl-4 -translate-y-10">
                                         <button onClick={() => setEvaluationType('internal')} className={`px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-base transition-all ${evaluationType === 'internal' ? 'bg-blue-500 text-white shadow-lg' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`}>INTERNA</button>
                                         <button onClick={() => setEvaluationType('external')} className={`px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-base transition-all ${evaluationType === 'external' ? 'bg-purple-500 text-white shadow-lg' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`}>EXTERNA</button>
                                     </div>
@@ -1527,7 +1491,7 @@
                                                     key={pt.id}
                                                     onClick={() => setActiveEval(pt)}
                                                     className={`liquid-glass w-full p-4 rounded-2xl flex items-center justify-between font-bold text-left border-2 ${statusText} ${statusBorder} ${statusGlow} ${isPending ? 'ring-2 ring-cyan-400/70' : ''}`}
-                                                    style={{background: 'rgba(15, 23, 42, 0.4)'}}
+                                                    style={{background: 'rgba(0, 0, 0, 0.7)'}}
                                                 >
                                                     <span className="text-sm md:text-base">{pt.name}</span>
                                                     <div className="flex items-center gap-2">
@@ -1548,7 +1512,7 @@
 
                                         onClick={handleMapClick}
 
-                                        className={`hidden md:flex glass-container animate-in zoom-in-95 w-full md:w-full lg:h-[calc(100vh-180px)] md:items-center md:justify-center md:p-12 ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
+                                        className={`hidden md:flex glass-container animate-in zoom-in-95 w-full h-[calc(100vh-180px)] md:items-center md:justify-center md:p-8 lg:p-12 -translate-y-10 ${isAdmin && adminMode === 'map_edit' ? 'cursor-crosshair' : ''}`}
 
                                     >
 
