@@ -493,6 +493,17 @@
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
             position: relative;
         }
+
+        .management-button {
+            background-color: black;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .management-button:hover {
+            background: radial-gradient(circle at center, rgba(81, 184, 234, 1) 0%, rgba(0, 0, 0, 1) 100%);
+            box-shadow: 0 0 20px rgba(81, 184, 234, 0.5);
+        }
     </style>
 
     <script type="text/babel">
@@ -1236,7 +1247,7 @@
 
                                 onClick={() => isAdmin ? setIsAdmin(false) : setShowLoginModal(true)}
 
-                                className="px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-xs md:text-sm uppercase bg-black text-white border-2 border-black hover:bg-slate-800 transition-all"
+                                className="management-button px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-xs md:text-sm uppercase border-2 border-black"
 
                             >
 
