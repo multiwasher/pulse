@@ -1451,42 +1451,48 @@
                                             const displayStatus = (isAdmin && adminMode === 'dashboard') ? currentStatusMap[pt.id] : pendingStatus;
                                             const isPending = !!pendingStatus;
 
-                                            // Minimalista color palette - different for each station
+                                            // Glass neon professional palette - different for each station
                                             const stationColors = [
-                                                { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-900', accent: 'bg-blue-100' },
-                                                { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-900', accent: 'bg-purple-100' },
-                                                { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-900', accent: 'bg-pink-100' },
-                                                { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-900', accent: 'bg-amber-100' },
-                                                { bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-900', accent: 'bg-teal-100' },
-                                                { bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-900', accent: 'bg-cyan-100' },
-                                                { bg: 'bg-lime-50', border: 'border-lime-200', text: 'text-lime-900', accent: 'bg-lime-100' },
-                                                { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-900', accent: 'bg-rose-100' },
-                                                { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-900', accent: 'bg-indigo-100' },
-                                                { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-900', accent: 'bg-orange-100' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-cyan-400/50', text: 'text-cyan-400', glow: 'shadow-lg shadow-cyan-500/50' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-purple-400/50', text: 'text-purple-400', glow: 'shadow-lg shadow-purple-500/50' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-pink-400/50', text: 'text-pink-400', glow: 'shadow-lg shadow-pink-500/50' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-orange-400/50', text: 'text-orange-400', glow: 'shadow-lg shadow-orange-500/50' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-emerald-400/50', text: 'text-emerald-400', glow: 'shadow-lg shadow-emerald-500/50' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-blue-400/50', text: 'text-blue-400', glow: 'shadow-lg shadow-blue-500/50' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-lime-400/50', text: 'text-lime-400', glow: 'shadow-lg shadow-lime-500/50' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-rose-400/50', text: 'text-rose-400', glow: 'shadow-lg shadow-rose-500/50' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-indigo-400/50', text: 'text-indigo-400', glow: 'shadow-lg shadow-indigo-500/50' },
+                                                { bg: 'bg-gradient-to-r from-slate-800/40 to-slate-800/20', border: 'border-violet-400/50', text: 'text-violet-400', glow: 'shadow-lg shadow-violet-500/50' },
                                             ];
 
                                             const colors = stationColors[idx % stationColors.length];
 
                                             const statusBg = !displayStatus ? colors.bg : 
-                                                            displayStatus === 'happy' ? 'bg-green-50' :
-                                                            displayStatus === 'neutral' ? 'bg-yellow-50' :
-                                                            'bg-red-50';
+                                                            displayStatus === 'happy' ? 'bg-gradient-to-r from-slate-800/40 to-slate-800/20' :
+                                                            displayStatus === 'neutral' ? 'bg-gradient-to-r from-slate-800/40 to-slate-800/20' :
+                                                            'bg-gradient-to-r from-slate-800/40 to-slate-800/20';
 
                                             const statusText = !displayStatus ? colors.text : 
-                                                              displayStatus === 'happy' ? 'text-green-900' :
-                                                              displayStatus === 'neutral' ? 'text-yellow-900' :
-                                                              'text-red-900';
+                                                              displayStatus === 'happy' ? 'text-green-400' :
+                                                              displayStatus === 'neutral' ? 'text-yellow-400' :
+                                                              'text-red-400';
 
                                             const statusBorder = !displayStatus ? colors.border : 
-                                                                displayStatus === 'happy' ? 'border-green-200' :
-                                                                displayStatus === 'neutral' ? 'border-yellow-200' :
-                                                                'border-red-200';
+                                                                displayStatus === 'happy' ? 'border-green-400/50' :
+                                                                displayStatus === 'neutral' ? 'border-yellow-400/50' :
+                                                                'border-red-400/50';
+
+                                            const statusGlow = !displayStatus ? colors.glow :
+                                                              displayStatus === 'happy' ? 'shadow-lg shadow-green-500/50' :
+                                                              displayStatus === 'neutral' ? 'shadow-lg shadow-yellow-500/50' :
+                                                              'shadow-lg shadow-red-500/50';
 
                                             return (
                                                 <button
                                                     key={pt.id}
                                                     onClick={() => setActiveEval(pt)}
-                                                    className={`w-full p-4 rounded-2xl flex items-center justify-between font-bold text-left transition-all border-2 ${statusBg} ${statusText} ${statusBorder} ${isPending ? 'ring-2 ring-indigo-500' : ''}`}
+                                                    className={`w-full p-4 rounded-2xl flex items-center justify-between font-bold text-left transition-all border-2 backdrop-blur-md ${statusBg} ${statusText} ${statusBorder} ${statusGlow} ${isPending ? 'ring-2 ring-cyan-400/70' : ''}`}
+                                                    style={{background: 'rgba(15, 23, 42, 0.4)'}}
                                                 >
                                                     <span className="text-sm md:text-base">{pt.name}</span>
                                                     <div className="flex items-center gap-2">
